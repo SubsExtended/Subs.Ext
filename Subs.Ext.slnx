@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/Solution Items/">
     <File Path="LICENSE.md" />
+    <File Path="Readme.txt" />
   </Folder>
   <Project Path="Subs.Ext/Subs.Ext.csproj" />
 </Solution>
