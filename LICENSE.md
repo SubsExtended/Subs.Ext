@@ -1,0 +1,2 @@
+Copyright (c) 2026 Aleksej Titov.
+All rights reserved. The contents of this project are proprietary and confidential. Unauthorized copying, transferring, or reproduction of the contents of this project via any medium is strictly prohibited.

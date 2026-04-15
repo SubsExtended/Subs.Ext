@@ -1,3 +1,6 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="LICENSE.md" />
+  </Folder>
   <Project Path="Subs.Ext/Subs.Ext.csproj" />
 </Solution>
