@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 using Prism.Mvvm;
 
+using Subs.Ext.Enums;
+
 namespace Subs.Ext.Models
 {
     internal class SubModel : BindableBase
@@ -24,6 +26,11 @@ namespace Subs.Ext.Models
             set { SetProperty(ref position, value); }
         }
 
-
+        private SubRating subRating;
+        public SubRating SubRating
+        {
+            get { return subRating; }
+            set { SetProperty(ref subRating, value); }
+        }
     }
 }

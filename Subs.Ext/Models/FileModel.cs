@@ -19,11 +19,25 @@ namespace Subs.Ext.Models
             set { SetProperty(ref fileName, value); }
         }
 
+        private Language language;
+        public  Language Language
+        {
+            get { return language; }
+            set { SetProperty(ref language, value); }
+        }
+
         private FileType fileType;
         public FileType FileType
         {
             get { return fileType; }
             set { SetProperty(ref fileType, value); }
+        }
+
+        private FileRank fileRank;
+        public FileRank FileRank
+        {
+            get { return fileRank; }
+            set { SetProperty(ref fileRank, value); }
         }
 
         private ObservableCollection<SubModel> subs;
