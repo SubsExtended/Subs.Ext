@@ -1,6 +1,7 @@
 This application is a part of solution that will selectively display subtitles for audio/video media, depending on
 a) how user rates his skill with the language of media.
-b) how each phrase difficulty is rated in subtitles file.
+b) how each phrase difficulty is rated in subtitles file. prases' difficulty can be rated
+judging by words frequency in the language, and by how clearly the phrase is pronounced in the media.
 
 The goal of this solution is to see/listen media mainly in its original language.
 But if some phrases are rated as hard for understanding (hearing) - media player will display subtitles for that phrase.
