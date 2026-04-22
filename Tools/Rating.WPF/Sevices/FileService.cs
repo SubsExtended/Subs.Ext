@@ -8,7 +8,7 @@ using Rating.WPF.Models;
 
 namespace Rating.WPF.Services
 {
-    internal class FileService : IFileService
+    public class FileService : IFileService
     {
         public FileService() { }
 

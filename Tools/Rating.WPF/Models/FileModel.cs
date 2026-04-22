@@ -10,7 +10,7 @@ using Rating.WPF.Enums;
 
 namespace Rating.WPF.Models
 {
-    internal class FileModel : BindableBase
+    public class FileModel : BindableBase
     {
         private string fileName;
         public string FileName
@@ -19,6 +19,9 @@ namespace Rating.WPF.Models
             set { SetProperty(ref fileName, value); }
         }
 
+        /// <summary>
+        /// This property is not stored/read in/from file, but used for display purposes only.
+        /// </summary>
         private Language language;
         public  Language Language
         {
@@ -40,8 +43,8 @@ namespace Rating.WPF.Models
             set { SetProperty(ref fileRank, value); }
         }
 
-        private ObservableCollection<SubModel> subs;
-        public ObservableCollection<SubModel> Subs
+        private ObservableCollection<SubtitleModel> subs;
+        public ObservableCollection<SubtitleModel> Subs
         {
             get { return subs; }
             set { SetProperty(ref subs, value); }

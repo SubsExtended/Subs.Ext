@@ -1,4 +1,10 @@
-﻿using Prism.Mvvm;
+﻿using System;
+using System.Collections.ObjectModel;
+
+using Prism.Mvvm;
+
+using Rating.WPF.Enums;
+using Rating.WPF.Models;
 
 namespace Rating.WPF.ViewModels
 {
@@ -11,9 +17,9 @@ namespace Rating.WPF.ViewModels
             set { SetProperty(ref _title, value); }
         }
 
+
         public MainWindowViewModel()
         {
-
         }
     }
 }

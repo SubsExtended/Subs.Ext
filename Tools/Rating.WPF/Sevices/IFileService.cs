@@ -8,9 +8,9 @@ using Rating.WPF.Models;
 
 namespace Rating.WPF.Services
 {
-    internal interface IFileService
+    public interface IFileService
     {
-        internal Task<ObservableCollection<FileModel>> ReadFileAsync(string directoryPath);
-        internal Task WriteFileAsync(FileModel fileModel, string directoryPath);
+        public Task<ObservableCollection<FileModel>> ReadFileAsync(string directoryPath);
+        public Task WriteFileAsync(FileModel fileModel, string directoryPath);
     }
 }

@@ -6,20 +6,20 @@ using System.Threading.Tasks;
 
 namespace Rating.WPF.Enums
 {
-    internal enum FileRank
+    public enum FileRank
     {
         None,
         Primary,
         Secondary,
     }
 
-    internal enum FileType
+    public enum FileType
     {
         None,
         Srt,
     }
 
-    internal enum SubRating
+    public enum SubRating
     {
         None = 0,
         A = 1,
@@ -29,7 +29,7 @@ namespace Rating.WPF.Enums
         E = 5,
     }
 
-    internal enum Language
+    public enum Language
     {
         English,
         Spanish,
