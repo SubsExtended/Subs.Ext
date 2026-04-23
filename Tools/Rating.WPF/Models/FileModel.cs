@@ -12,6 +12,13 @@ namespace Rating.WPF.Models
 {
     public class FileModel : BindableBase
     {
+        private string filePath;
+        public string FilePath
+        {
+            get { return filePath; }
+            set { SetProperty(ref filePath, value); }
+        }
+
         private string fileName;
         public string FileName
         {
@@ -22,8 +29,8 @@ namespace Rating.WPF.Models
         /// <summary>
         /// This property is not stored/read in/from file, but used for display purposes only.
         /// </summary>
-        private Language language;
-        public  Language Language
+        private Language? language;
+        public  Language? Language
         {
             get { return language; }
             set { SetProperty(ref language, value); }

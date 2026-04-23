@@ -4,6 +4,6 @@
              xmlns:local="clr-namespace:Rating.WPF"
              xmlns:prism="http://prismlibrary.com/" >
     <Application.Resources>
-         
+        <ResourceDictionary Source="Templates/DataTemplates.xaml"/>
     </Application.Resources>
 </prism:PrismApplication>

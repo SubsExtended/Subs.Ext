@@ -12,6 +12,10 @@ namespace Rating.WPF.Models
 {
     public class SubtitleModel : BindableBase
     {
+        /// <summary>
+        /// Original block of text from the subtitle file, including index, timecode, and text.
+        /// If the subtitle file is modified and saved, this original block will be used to reconstruct the file with updated ratings
+        /// </summary>
         private string originalBlock;
         public string OriginalBlock
         {
@@ -47,11 +51,36 @@ namespace Rating.WPF.Models
             set { SetProperty(ref timeTo, value); }
         }
 
-        private SubRating subtitleRating;
-        public SubRating SubtitleRating
+        /// <summary>
+        /// Difference between Original and Current Ratings will be considered as "file dirty"
+        /// and will be used for visual cues in the UI (e.g. red highlight)
+        /// and for saving logic (e.g. prompt to save changes).
+        /// If null, it means no rating was originally assigned
+        /// and any current rating will be treated as a new assignment rather than a change.
+        /// This allows us to distinguish between subs that were never rated
+        /// and those that have been modified from an original rating.
+        /// </summary>
+        private SubRating? ratingOriginal;
+        public SubRating? RatingOriginal
         {
-            get { return subtitleRating; }
-            set { SetProperty(ref subtitleRating, value); }
+            get { return ratingOriginal; }
+            set { SetProperty(ref ratingOriginal, value); }
+        }
+
+        /// <summary>
+        /// Difference between Original and Current Ratings will be considered as "file dirty"
+        /// and will be used for visual cues in the UI (e.g. red highlight)
+        /// and for saving logic (e.g. prompt to save changes).
+        /// If null, it means no rating was originally assigned
+        /// and any current rating will be treated as a new assignment rather than a change.
+        /// This allows us to distinguish between subs that were never rated
+        /// and those that have been modified from an original rating.
+        /// </summary>
+        private SubRating? ratingCurrent;
+        public SubRating? RatingCurrent
+        {
+            get { return ratingCurrent; }
+            set { SetProperty(ref ratingCurrent, value); }
         }
     }
 }

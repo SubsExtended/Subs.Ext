@@ -4,6 +4,7 @@ using Prism.Ioc;
 using Prism.Regions;
 
 using Rating.WPF.General;
+using Rating.WPF.Services;
 using Rating.WPF.Views;
 
 namespace Rating.WPF
@@ -25,7 +26,9 @@ namespace Rating.WPF
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             // Register the view for navigation so RequestNavigate can use the view's name
-            containerRegistry.RegisterForNavigation<WorkspaceView, ViewModels.WorkspaceViewViewModel>(nameof(WorkspaceView));
+            containerRegistry.RegisterForNavigation<WorkspaceView, ViewModels.WorkspaceViewModel>(nameof(WorkspaceView));
+
+            containerRegistry.RegisterSingleton<IFileService, FileService>();
         }
 
         protected override void OnInitialized()

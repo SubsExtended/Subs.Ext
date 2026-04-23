@@ -6,24 +6,40 @@
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
              xmlns:local="clr-namespace:Rating.WPF.Views"
-             xmlns:uc="clr-namespace:Rating.WPF.Controls"
+             xmlns:enum="clr-namespace:Rating.WPF.Enums"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
-        <DataTemplate DataType="{x:Type uc:FileControl}">
-            <uc:FileControl/>
-        </DataTemplate>
-    </UserControl.Resources>
 
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <uc:FileControl Grid.Column="0" Margin="5"
+
+        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="5">
+            <Button Margin="5"
+                    Content="Open Primary File"
+                    Command="{Binding OpenFileCommand}"
+                    CommandParameter="{x:Static enum:FileRank.Primary}">
+            </Button>
+            <Button Margin="5"
+                    Content="Open Secondary File"
+                    Command="{Binding OpenFileCommand}"
+                    CommandParameter="{x:Static enum:FileRank.Secondary}">
+            </Button>
+        </StackPanel>
+
+        <ContentControl Grid.Row="1" Grid.Column="0" Margin="5"
                         VerticalAlignment="Stretch"
-                        DataContext="{Binding PrimaryFile}"/>
-        <ListView Grid.Column="1" Margin="5"
+                        ContentTemplate="{StaticResource FileTemplate}"
+                        Content="{Binding PrimaryFile}">
+        </ContentControl>
+        
+        <ListView Grid.Row="1" Grid.Column="1" Margin="5"
                   VerticalContentAlignment="Stretch"
                   ItemsSource="{Binding SecondaryFiles}">
             <ListView.ItemsPanel>
@@ -33,9 +49,13 @@
             </ListView.ItemsPanel>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <uc:FileControl DataContext="{Binding}"/>
+                    <ContentControl VerticalAlignment="Stretch"
+                                    ContentTemplate="{StaticResource FileTemplate}"
+                                    Content="{Binding}">
+                    </ContentControl>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+        
     </Grid>
 </UserControl>
