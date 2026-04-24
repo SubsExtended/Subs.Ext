@@ -2,7 +2,62 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:System="clr-namespace:System;assembly=mscorlib"
                     xmlns:prism="http://prismlibrary.com/"
-                    xmlns:enum="clr-namespace:Rating.WPF.Enums">
+                    xmlns:enum="clr-namespace:Rating.WPF.Enums"
+                    xmlns:v="clr-namespace:Rating.WPF.Views"
+                    xmlns:cc="clr-namespace:Rating.WPF.Converters">
+
+    <cc:SubtitleCommandParameterConverter x:Key="SubCommandConverter" />
+
+    <DataTemplate x:Key="SubtitleTemplate">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
+                       VerticalAlignment="Stretch"
+                       Text="{Binding Position}">
+            </TextBlock>
+
+            <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="4"
+                       Margin="5,0,0,0"
+                       Text="{Binding Text}">
+            </TextBlock>
+
+            <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"
+                       Margin="5,0,0,0"
+                       Text="Rating: ">
+            </TextBlock>
+
+            <TextBlock Grid.Row="1" Grid.Column="2"
+                       Margin="5,0,0,0"
+                       Text="{Binding RatingCurrent}">
+            </TextBlock>
+
+            <Button Grid.Row="1" Grid.Column="4"
+                    Margin="5,0,0,0"
+                    Content="Promote"
+                    Command="{Binding DataContext.PromoteSubtitleCommand, RelativeSource={RelativeSource AncestorType={x:Type v:WorkspaceView}}}">
+                <Button.CommandParameter>
+                    <MultiBinding Converter="{StaticResource SubCommandConverter}">
+                        <Binding Path="Position"/>
+                        <Binding Path="PK"/>
+                    </MultiBinding>
+                </Button.CommandParameter>
+            </Button>
+
+        </Grid>
+    </DataTemplate>
 
     <DataTemplate x:Key="FileTemplate">
         <DataTemplate.Resources>
@@ -17,8 +72,8 @@
         <Grid Width="200">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -35,6 +90,10 @@
                       ItemsSource="{Binding Source={StaticResource dataFromEnum}}"
                       SelectedItem="{Binding Language, Mode=TwoWay}">
             </ComboBox>
+            <ListView Grid.Row="2" Margin="5"
+                      ItemsSource="{Binding Subtitles}"
+                      ItemTemplate="{StaticResource SubtitleTemplate}">
+            </ListView>
         </Grid>
     </DataTemplate>
 

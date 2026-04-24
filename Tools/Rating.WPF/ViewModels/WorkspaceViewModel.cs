@@ -88,9 +88,9 @@ namespace Rating.WPF.ViewModels
 
         #region Commands
 
-        private DelegateCommand<FileRank?> _openFile;
+        private DelegateCommand<FileRank?> openFile;
         public DelegateCommand<FileRank?> OpenFileCommand =>
-            _openFile ?? (_openFile = new DelegateCommand<FileRank?>(ExecuteOpenFileCommand));
+            openFile ?? (openFile = new DelegateCommand<FileRank?>(ExecuteOpenFileCommand));
 
         async void ExecuteOpenFileCommand(FileRank? parameter)
         {
@@ -98,6 +98,15 @@ namespace Rating.WPF.ViewModels
             {
                 await OpenFile(parameter.Value);
             }
+        }
+
+        private DelegateCommand<object> promoteSubtitle;
+        public DelegateCommand<object> PromoteSubtitleCommand =>
+            promoteSubtitle ?? (promoteSubtitle = new DelegateCommand<object>(ExecutePromoteSubtitleCommand));
+
+        void ExecutePromoteSubtitleCommand(object parameter)
+        {
+
         }
 
         #endregion

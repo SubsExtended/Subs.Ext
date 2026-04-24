@@ -12,6 +12,8 @@ namespace Rating.WPF.Models
 {
     public class FileModel : BindableBase
     {
+        public Guid PK { get; set; } = Guid.NewGuid();
+
         private string filePath;
         public string FilePath
         {
@@ -43,6 +45,9 @@ namespace Rating.WPF.Models
             set { SetProperty(ref fileType, value); }
         }
 
+        /// <summary>
+        /// Primary or Secondary
+        /// </summary>
         private FileRank fileRank;
         public FileRank FileRank
         {
@@ -50,11 +55,11 @@ namespace Rating.WPF.Models
             set { SetProperty(ref fileRank, value); }
         }
 
-        private ObservableCollection<SubtitleModel> subs;
-        public ObservableCollection<SubtitleModel> Subs
+        private ObservableCollection<SubtitleModel> subtitles;
+        public ObservableCollection<SubtitleModel> Subtitles
         {
-            get { return subs; }
-            set { SetProperty(ref subs, value); }
+            get { return subtitles; }
+            set { SetProperty(ref subtitles, value); }
         }
     }
 }

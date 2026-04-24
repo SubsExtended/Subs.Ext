@@ -8,7 +8,6 @@ namespace Rating.WPF.Enums
 {
     public enum FileRank
     {
-        None,
         Primary,
         Secondary,
     }
@@ -19,7 +18,7 @@ namespace Rating.WPF.Enums
         Srt,
     }
 
-    public enum SubRating
+    public enum SubtitleRating
     {
         A = 1,
         B = 2,

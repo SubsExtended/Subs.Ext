@@ -25,7 +25,7 @@ namespace Rating.WPF.Services
                 FilePath = filePath,
                 FileName = Path.GetFileName(filePath),
                 FileType = FileType.Srt,
-                Subs = new ObservableCollection<SubtitleModel>()
+                Subtitles = new ObservableCollection<SubtitleModel>()
             };
 
             var fileInfo = new FileInfo(filePath);
@@ -110,7 +110,7 @@ namespace Rating.WPF.Services
             if (match.Success)
             {
                 string grade = match.Groups[1].Value.ToUpper();
-                sub.RatingOriginal = sub.RatingCurrent = Enum.Parse<SubRating>(grade);
+                sub.RatingOriginal = sub.RatingCurrent = Enum.Parse<SubtitleRating>(grade);
                 // Strip tag from display text
                 sub.Text = DiffRegex.Replace(combinedText, "").Trim();
             }
@@ -120,7 +120,7 @@ namespace Rating.WPF.Services
             }
 
             sub.OriginalBlock = raw.ToString();
-            parent.Subs.Add(sub);
+            parent.Subtitles.Add(sub);
         }
 
         private TimeSpan ParseSrtTime(string srtTime)
