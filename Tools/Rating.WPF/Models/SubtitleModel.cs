@@ -13,6 +13,7 @@ namespace Rating.WPF.Models
     public class SubtitleModel : BindableBase
     {
         public Guid PK { get; set; } = Guid.NewGuid();
+        public Guid PKParent { get; set; }
 
         /// <summary>
         /// Original block of text from the subtitle file, including index, timecode, and text.
@@ -62,8 +63,8 @@ namespace Rating.WPF.Models
         /// This allows us to distinguish between subs that were never rated
         /// and those that have been modified from an original rating.
         /// </summary>
-        private SubtitleRating? ratingOriginal;
-        public SubtitleRating? RatingOriginal
+        private SubtitleRatingEnum? ratingOriginal;
+        public SubtitleRatingEnum? RatingOriginal
         {
             get { return ratingOriginal; }
             set { SetProperty(ref ratingOriginal, value); }
@@ -78,8 +79,8 @@ namespace Rating.WPF.Models
         /// This allows us to distinguish between subs that were never rated
         /// and those that have been modified from an original rating.
         /// </summary>
-        private SubtitleRating? ratingCurrent;
-        public SubtitleRating? RatingCurrent
+        private SubtitleRatingEnum? ratingCurrent;
+        public SubtitleRatingEnum? RatingCurrent
         {
             get { return ratingCurrent; }
             set { SetProperty(ref ratingCurrent, value); }

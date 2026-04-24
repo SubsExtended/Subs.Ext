@@ -24,12 +24,12 @@
             <Button Margin="5"
                     Content="Open Primary File"
                     Command="{Binding OpenFileCommand}"
-                    CommandParameter="{x:Static enum:FileRank.Primary}">
+                    CommandParameter="{x:Static enum:FileRankEnum.Primary}">
             </Button>
             <Button Margin="5"
                     Content="Open Secondary File"
                     Command="{Binding OpenFileCommand}"
-                    CommandParameter="{x:Static enum:FileRank.Secondary}">
+                    CommandParameter="{x:Static enum:FileRankEnum.Secondary}">
             </Button>
         </StackPanel>
 

@@ -31,15 +31,15 @@ namespace Rating.WPF.Models
         /// <summary>
         /// This property is not stored/read in/from file, but used for display purposes only.
         /// </summary>
-        private Language? language;
-        public  Language? Language
+        private LanguageEnum? language;
+        public  LanguageEnum? Language
         {
             get { return language; }
             set { SetProperty(ref language, value); }
         }
 
-        private FileType fileType;
-        public FileType FileType
+        private FileTypeEnum fileType;
+        public FileTypeEnum FileType
         {
             get { return fileType; }
             set { SetProperty(ref fileType, value); }
@@ -48,18 +48,18 @@ namespace Rating.WPF.Models
         /// <summary>
         /// Primary or Secondary
         /// </summary>
-        private FileRank fileRank;
-        public FileRank FileRank
+        private FileRankEnum fileRank;
+        public FileRankEnum FileRank
         {
             get { return fileRank; }
             set { SetProperty(ref fileRank, value); }
         }
 
-        private ObservableCollection<SubtitleModel> subtitles;
-        public ObservableCollection<SubtitleModel> Subtitles
+        private ObservableCollection<SubtitleModel> subtitleCollection;
+        public ObservableCollection<SubtitleModel> SubtitleCollection
         {
-            get { return subtitles; }
-            set { SetProperty(ref subtitles, value); }
+            get { return subtitleCollection; }
+            set { SetProperty(ref subtitleCollection, value); }
         }
     }
 }

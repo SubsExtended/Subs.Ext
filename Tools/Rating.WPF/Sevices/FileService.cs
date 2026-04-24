@@ -24,8 +24,8 @@ namespace Rating.WPF.Services
             {
                 FilePath = filePath,
                 FileName = Path.GetFileName(filePath),
-                FileType = FileType.Srt,
-                Subtitles = new ObservableCollection<SubtitleModel>()
+                FileType = FileTypeEnum.Srt,
+                SubtitleCollection = new ObservableCollection<SubtitleModel>()
             };
 
             var fileInfo = new FileInfo(filePath);
@@ -36,7 +36,7 @@ namespace Rating.WPF.Services
             using var reader = new StreamReader(filePath, Encoding.UTF8, true);
 
             string line;
-            var currentSub = new SubtitleModel();
+            var currentSubtitle = new SubtitleModel() { PKParent = fileModel.PK };
             var textLines = new List<string>();
             var rawBlock = new StringBuilder();
 
@@ -55,8 +55,8 @@ namespace Rating.WPF.Services
                 {
                     if (state == 2) // End of a block
                     {
-                        FinalizeSubtitle(currentSub, textLines, rawBlock, fileModel);
-                        currentSub = new SubtitleModel();
+                        FinalizeSubtitle(currentSubtitle, textLines, rawBlock, fileModel);
+                        currentSubtitle = new SubtitleModel();
                         textLines.Clear();
                         rawBlock.Clear();
                         state = 0;
@@ -71,7 +71,7 @@ namespace Rating.WPF.Services
                     case 0: // Expecting Index
                         if (int.TryParse(line.Trim(), out int pos))
                         {
-                            currentSub.Position = pos;
+                            currentSubtitle.Position = pos;
                             state = 1;
                         }
                         break;
@@ -80,8 +80,8 @@ namespace Rating.WPF.Services
                         var times = line.Split("-->");
                         if (times.Length == 2)
                         {
-                            currentSub.TimeFrom = ParseSrtTime(times[0].Trim());
-                            currentSub.TimeTo = ParseSrtTime(times[1].Trim());
+                            currentSubtitle.TimeFrom = ParseSrtTime(times[0].Trim());
+                            currentSubtitle.TimeTo = ParseSrtTime(times[1].Trim());
                             state = 2;
                         }
                         break;
@@ -95,7 +95,7 @@ namespace Rating.WPF.Services
             // Handle last sub if file doesn't end with a blank line
             if (state == 2 && textLines.Count > 0)
             {
-                FinalizeSubtitle(currentSub, textLines, rawBlock, fileModel);
+                FinalizeSubtitle(currentSubtitle, textLines, rawBlock, fileModel);
             }
 
             return fileModel;
@@ -103,31 +103,40 @@ namespace Rating.WPF.Services
 
         private void FinalizeSubtitle(SubtitleModel sub, List<string> lines, StringBuilder raw, FileModel parent)
         {
+            // Join lines for the WPF UI
             string combinedText = string.Join(Environment.NewLine, lines);
 
-            // Extract and strip the {DIFF:X} tag
             var match = DiffRegex.Match(combinedText);
             if (match.Success)
             {
                 string grade = match.Groups[1].Value.ToUpper();
-                sub.RatingOriginal = sub.RatingCurrent = Enum.Parse<SubtitleRating>(grade);
-                // Strip tag from display text
+                // Use TryParse to prevent crashes on malformed tags
+                if (Enum.TryParse<SubtitleRatingEnum>(grade, out var rating))
+                {
+                    sub.RatingOriginal = sub.RatingCurrent = rating;
+                }
+                // Clean the text for display
                 sub.Text = DiffRegex.Replace(combinedText, "").Trim();
             }
             else
             {
                 sub.Text = combinedText;
+                sub.RatingOriginal = sub.RatingCurrent = SubtitleRatingEnum.A; // Default
             }
 
             sub.OriginalBlock = raw.ToString();
-            parent.Subtitles.Add(sub);
+            parent.SubtitleCollection.Add(sub);
         }
 
         private TimeSpan ParseSrtTime(string srtTime)
         {
-            // SRT format: 00:00:00,000
-            // TimeSpan.Parse uses '.' for fractional seconds, SRT uses ','
-            return TimeSpan.Parse(srtTime.Replace(',', '.'));
+            // Ensure we handle the comma and use Exact parsing to prevent format exceptions
+            string cleanedTime = srtTime.Replace(',', '.');
+            if (TimeSpan.TryParseExact(cleanedTime, @"hh\:mm\:ss\.fff", null, out var ts))
+            {
+                return ts;
+            }
+            return TimeSpan.Zero; // Or handle error
         }
 
         public Task WriteFileAsync(FileModel fileModel, string filePath, CancellationToken ct = default)

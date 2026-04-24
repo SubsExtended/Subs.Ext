@@ -26,14 +26,14 @@ namespace Rating.WPF.ViewModels
         public WorkspaceViewModel(IFileService fileService)
         {
             this.fileService = fileService;
-            this.SecondaryFiles = new ObservableCollection<FileModel>();
+            this.SecondaryFileCollection = new ObservableCollection<FileModel>();
         }
 
         #endregion
 
         #region Methods
 
-        private async Task OpenFile(FileRank fileRank)
+        private async Task OpenFile(FileRankEnum fileRank)
         {
             FileModel fileModel = new();
 
@@ -54,14 +54,14 @@ namespace Rating.WPF.ViewModels
 
             switch (fileRank)
             {
-                case FileRank.Primary:
+                case FileRankEnum.Primary:
 
                     this.PrimaryFile = fileModel;
                     break;
 
-                case FileRank.Secondary:
+                case FileRankEnum.Secondary:
 
-                    this.SecondaryFiles.Add(fileModel);
+                    this.SecondaryFileCollection.Add(fileModel);
                     break;
             }
         }
@@ -77,22 +77,29 @@ namespace Rating.WPF.ViewModels
             set { SetProperty(ref primaryFile, value); }
         }
 
-        private ObservableCollection<FileModel> secondaryFiles;
-        public ObservableCollection<FileModel> SecondaryFiles
+        private ObservableCollection<FileModel> secondaryFileCollection;
+        public ObservableCollection<FileModel> SecondaryFileCollection
         {
-            get { return secondaryFiles; }
-            set { SetProperty(ref secondaryFiles, value); }
+            get { return secondaryFileCollection; }
+            set { SetProperty(ref secondaryFileCollection, value); }
+        }
+
+        private SubtitleModel subtitleSelectedItem;
+        public SubtitleModel SubtitleSelectedItem
+        {
+            get { return subtitleSelectedItem; }
+            set { SetProperty(ref subtitleSelectedItem, value); }
         }
 
         #endregion
 
         #region Commands
 
-        private DelegateCommand<FileRank?> openFile;
-        public DelegateCommand<FileRank?> OpenFileCommand =>
-            openFile ?? (openFile = new DelegateCommand<FileRank?>(ExecuteOpenFileCommand));
+        private DelegateCommand<FileRankEnum?> openFile;
+        public DelegateCommand<FileRankEnum?> OpenFileCommand =>
+            openFile ?? (openFile = new DelegateCommand<FileRankEnum?>(ExecuteOpenFileCommand));
 
-        async void ExecuteOpenFileCommand(FileRank? parameter)
+        async void ExecuteOpenFileCommand(FileRankEnum? parameter)
         {
             if (parameter.HasValue)
             {
@@ -105,6 +112,15 @@ namespace Rating.WPF.ViewModels
             promoteSubtitle ?? (promoteSubtitle = new DelegateCommand<object>(ExecutePromoteSubtitleCommand));
 
         void ExecutePromoteSubtitleCommand(object parameter)
+        {
+
+        }
+
+        private DelegateCommand<object> demoteSubtitle;
+        public DelegateCommand<object> DemoteSubtitleCommand =>
+            demoteSubtitle ?? (demoteSubtitle = new DelegateCommand<object>(ExecuteDemoteSubtitleCommand));
+
+        void ExecuteDemoteSubtitleCommand(object parameter)
         {
 
         }
