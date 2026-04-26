@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Subs.Ext\Tools\Rating.WPF\Sevices\FileService.cs
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -6,6 +8,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+
+
 using Rating.WPF.Enums;
 using Rating.WPF.Models;
 
@@ -36,7 +40,7 @@ namespace Rating.WPF.Services
             using var reader = new StreamReader(filePath, Encoding.UTF8, true);
 
             string line;
-            var currentSubtitle = new SubtitleModel() { PKParent = fileModel.PK };
+            var currentSubtitle = new SubtitleModel(fileModel.PK);
             var textLines = new List<string>();
             var rawBlock = new StringBuilder();
 
@@ -56,7 +60,7 @@ namespace Rating.WPF.Services
                     if (state == 2) // End of a block
                     {
                         FinalizeSubtitle(currentSubtitle, textLines, rawBlock, fileModel);
-                        currentSubtitle = new SubtitleModel();
+                        currentSubtitle = new SubtitleModel(fileModel.PK);
                         textLines.Clear();
                         rawBlock.Clear();
                         state = 0;
@@ -121,7 +125,7 @@ namespace Rating.WPF.Services
             else
             {
                 sub.Text = combinedText;
-                sub.RatingOriginal = sub.RatingCurrent = SubtitleRatingEnum.A; // Default
+                sub.RatingOriginal = sub.RatingCurrent = null; // Default
             }
 
             sub.OriginalBlock = raw.ToString();
@@ -139,9 +143,39 @@ namespace Rating.WPF.Services
             return TimeSpan.Zero; // Or handle error
         }
 
-        public Task WriteFileAsync(FileModel fileModel, string filePath, CancellationToken ct = default)
+        public async Task WriteFileAsync(FileModel fileModel, string filePath, CancellationToken ct = default)
         {
-            throw new NotImplementedException("Next step: Implement export with forced CRLF.");
+            // Define the SRT-compliant newline (CRLF)
+            const string srtNewLine = "\r\n";
+
+            // Use UTF-8 with BOM for maximum compatibility with media players
+            using var writer = new StreamWriter(filePath, false, new UTF8Encoding(true));
+
+            foreach (var sub in fileModel.SubtitleCollection)
+            {
+                ct.ThrowIfCancellationRequested();
+
+                // 1. Index
+                await writer.WriteAsync($"{sub.Position}{srtNewLine}");
+
+                // 2. Timecodes (Force 00:00:00,000 format)
+                string timeFrom = sub.TimeFrom.ToString(@"hh\:mm\:ss\,fff");
+                string timeTo = sub.TimeTo.ToString(@"hh\:mm\:ss\,fff");
+                await writer.WriteAsync($"{timeFrom} --> {timeTo}{srtNewLine}");
+
+                // 3. Text + Optional Tag
+                string cleanText = sub.Text.Replace(Environment.NewLine, srtNewLine);
+
+                // Only add the tag if the line has been rated (A-E)
+                string tag = sub.RatingCurrent.HasValue ? $" {{DIFF:{sub.RatingCurrent}}}" : "";
+                await writer.WriteAsync($"{cleanText}{tag}{srtNewLine}");
+
+                // 4. Closing empty line
+                await writer.WriteAsync(srtNewLine);
+            }
+
+            // Ensure everything is flushed to disk
+            await writer.FlushAsync();
         }
     }
 }

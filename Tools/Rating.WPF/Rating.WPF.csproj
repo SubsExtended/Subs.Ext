@@ -1,4 +1,4 @@
-﻿<!-- Rating.WPF -->
+﻿<!-- Subs.Ext\Tools\Rating.WPF\Rating.WPF.csproj -->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>

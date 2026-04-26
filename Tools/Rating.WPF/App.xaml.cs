@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿// Subs.Ext\Tools\Rating.WPF\App.xaml.cs
+
+using System.Windows;
 
 using Prism.Ioc;
 using Prism.Regions;
@@ -36,7 +38,7 @@ namespace Rating.WPF
             base.OnInitialized();
 
             // Now that the shell (MainWindow) is created and regions are available,
-            // request navigation to the FilesView into the ContentRegion.
+            // request navigation to the WorkspaceView into the ContentRegion.
             _regionManager = Container.Resolve<IRegionManager>();
             _regionManager.RequestNavigate(Constants.ContentRegion, nameof(WorkspaceView));
         }

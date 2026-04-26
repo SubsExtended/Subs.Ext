@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// Subs.Ext\Tools\Rating.WPF\Models\SubtitleModel.cs
+
+using System;
 
 using Prism.Mvvm;
 
@@ -12,6 +10,11 @@ namespace Rating.WPF.Models
 {
     public class SubtitleModel : BindableBase
     {
+        public SubtitleModel(Guid pkParent)
+        {
+            PKParent = pkParent;
+        }
+
         public Guid PK { get; set; } = Guid.NewGuid();
         public Guid PKParent { get; set; }
 

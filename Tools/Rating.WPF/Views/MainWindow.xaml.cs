@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿// Subs.Ext\Tools\Rating.WPF\Views\MainWindow.xaml.cs
+
+using System.Windows;
 
 namespace Rating.WPF.Views
 {

@@ -1,4 +1,6 @@
-﻿using Rating.WPF.Enums;
+﻿// Subs.Ext\Tools\Rating.WPF\Mock\Mock.cs
+
+using Rating.WPF.Enums;
 using Rating.WPF.Models;
 using Rating.WPF.Services;
 using System;

@@ -1,4 +1,5 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<!-- Subs.Ext\Tools\Rating.WPF\Templates\DataTemplates.xaml -->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:System="clr-namespace:System;assembly=mscorlib"
                     xmlns:prism="http://prismlibrary.com/"
@@ -46,7 +47,7 @@
                     HorizontalAlignment="Right"
                     Content="Promote"
                     Command="{Binding DataContext.PromoteSubtitleCommand, RelativeSource={RelativeSource AncestorType={x:Type v:WorkspaceView}}}"
-                    CommandParameter="{Binding PK}">
+                    CommandParameter="{Binding}">
             </Button>
 
             <Button Grid.Row="1" Grid.Column="5"
@@ -54,13 +55,13 @@
                     HorizontalAlignment="Right"
                     Content="Demote"
                     Command="{Binding DataContext.DemoteSubtitleCommand, RelativeSource={RelativeSource AncestorType={x:Type v:WorkspaceView}}}"
-                    CommandParameter="{Binding PK}">
+                    CommandParameter="{Binding}">
             </Button>
 
         </Grid>
     </DataTemplate>
 
-    <DataTemplate x:Key="FileTemplate">
+    <DataTemplate x:Key="PrimaryFileTemplate">
         <DataTemplate.Resources>
             <ObjectDataProvider x:Key="dataFromEnum"
                             MethodName="GetValues"
@@ -70,7 +71,7 @@
                 </ObjectDataProvider.MethodParameters>
             </ObjectDataProvider>
         </DataTemplate.Resources>
-        <Grid Width="400">
+        <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -94,9 +95,37 @@
             <ListView Grid.Row="2" Margin="5" Grid.ColumnSpan="2"
                       HorizontalContentAlignment="Stretch"
                       AlternationCount="2"
+                      VirtualizingStackPanel.IsVirtualizing="True"
                       ItemsSource="{Binding SubtitleCollection}"
-                      ItemTemplate="{StaticResource SubtitleTemplate}">
+                      ItemTemplate="{StaticResource SubtitleTemplate}"
+                      SelectedItem="{Binding DataContext.PrimaryFileSubtitleSelectedItem, RelativeSource={RelativeSource AncestorType={x:Type v:WorkspaceView}}, Mode=TwoWay}">
             </ListView>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="SecondaryFileTemplate">
+        <DataTemplate.Resources>
+            <ObjectDataProvider x:Key="dataFromEnum"
+                            MethodName="GetValues"
+                            ObjectType="{x:Type System:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type TypeName="enum:LanguageEnum" />
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+        </DataTemplate.Resources>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <ComboBox Grid.Row="1" Margin="5"
+                      VerticalAlignment="Top"
+                      ItemsSource="{Binding Source={StaticResource dataFromEnum}}"
+                      SelectedItem="{Binding Language, Mode=TwoWay}">
+            </ComboBox>
+            <ContentControl Grid.Column="1" Content="{Binding SubtitleSelectedItem}" ContentTemplate="{StaticResource SubtitleTemplate}"/>
         </Grid>
     </DataTemplate>
 

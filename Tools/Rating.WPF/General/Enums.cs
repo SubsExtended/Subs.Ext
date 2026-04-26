@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Subs.Ext\Tools\Rating.WPF\General\Enums.cs
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,6 +20,7 @@ namespace Rating.WPF.Enums
         Srt,
     }
 
+    // The rating is based on how hard is a phrase for understanding, with A being the hardest and E being the easiest.
     public enum SubtitleRatingEnum
     {
         A = 1,

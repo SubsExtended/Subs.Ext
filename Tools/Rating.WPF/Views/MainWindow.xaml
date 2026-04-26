@@ -1,4 +1,5 @@
-﻿<Window x:Class="Rating.WPF.Views.MainWindow"
+﻿<!-- Subs.Ext\Tools\Rating.WPF\Views\MainWindow.xaml -->
+<Window x:Class="Rating.WPF.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:const="clr-namespace:Rating.WPF.General"

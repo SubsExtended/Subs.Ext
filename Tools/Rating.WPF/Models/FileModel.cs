@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Subs.Ext\Tools\Rating.WPF\Models\FileModel.cs
+
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
@@ -53,6 +55,13 @@ namespace Rating.WPF.Models
         {
             get { return fileRank; }
             set { SetProperty(ref fileRank, value); }
+        }
+
+        private SubtitleModel subtitleSelectedItem;
+        public SubtitleModel SubtitleSelectedItem
+        {
+            get { return subtitleSelectedItem; }
+            set { SetProperty(ref subtitleSelectedItem, value); }
         }
 
         private ObservableCollection<SubtitleModel> subtitleCollection;
