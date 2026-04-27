@@ -8,6 +8,8 @@ using Prism.Regions;
 using Rating.WPF.General;
 using Rating.WPF.Services;
 using Rating.WPF.Views;
+using Rating.WPF.Dialogs;
+using Rating.WPF.ViewModels.Dialogs;
 
 namespace Rating.WPF
 {
@@ -29,8 +31,8 @@ namespace Rating.WPF
         {
             // Register the view for navigation so RequestNavigate can use the view's name
             containerRegistry.RegisterForNavigation<WorkspaceView, ViewModels.WorkspaceViewModel>(nameof(WorkspaceView));
-
             containerRegistry.RegisterSingleton<IFileService, FileService>();
+            containerRegistry.RegisterDialog<YesNoDialog, YesNoDialogViewModel>(nameof(YesNoDialog));
         }
 
         protected override void OnInitialized()

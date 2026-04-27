@@ -1,19 +1,19 @@
 ﻿// Subs.Ext\Tools\Rating.WPF\ViewModels\WorkspaceViewModel.cs
 
+using Microsoft.Win32;
+using Prism.Commands;
+using Prism.Mvvm;
+using Prism.Services.Dialogs;
+using Rating.WPF.Dialogs;
+using Rating.WPF.Enums;
+using Rating.WPF.Models;
+using Rating.WPF.Services;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
-using Microsoft.Win32;
-
-using Prism.Commands;
-using Prism.Mvvm;
-
-using Rating.WPF.Enums;
-using Rating.WPF.Models;
-using Rating.WPF.Services;
 
 namespace Rating.WPF.ViewModels
 {
@@ -22,17 +22,17 @@ namespace Rating.WPF.ViewModels
         #region Fields
 
         private readonly IFileService _fileService;
-        private readonly int _subtitleRatingEnumMaxVal = Enum.GetValues(typeof(SubtitleRatingEnum)).Cast<int>().Max();
-        private readonly int _subtitleRatingEnumMinVal = Enum.GetValues(typeof(SubtitleRatingEnum)).Cast<int>().Min();
+
+        private IDialogService _dialogService;
 
         #endregion
 
         #region CTOR
 
-        public WorkspaceViewModel(IFileService fileService)
+        public WorkspaceViewModel(IFileService fileService, IDialogService dialogService)
         {
             this._fileService = fileService;
-            this.SecondaryFileCollection = new ObservableCollection<FileModel>();
+            this._dialogService = dialogService;
         }
 
         #endregion
@@ -41,100 +41,127 @@ namespace Rating.WPF.ViewModels
 
         private async Task OpenFile(FileRankEnum fileRank)
         {
-            FileModel fileModel = new();
-
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "SRT files (*.srt)|*.srt";
 
             if (openFileDialog.ShowDialog() == true)
             {
-                CancellationToken cancellationToken = new CancellationToken();
                 string filePath = openFileDialog.FileName;
-                fileModel = await _fileService.ReadFileAsync(filePath, cancellationToken);
-                fileModel.FileRank = fileRank;
             }
             else
             {
                 return;
             }
 
-            switch (fileRank)
+            var fileModel = await _fileService.ReadFileAsync(openFileDialog.FileName, new CancellationToken());
+            fileModel.FileRank = fileRank;
+
+            if (fileRank == FileRankEnum.Primary)
             {
-                case FileRankEnum.Primary:
+                // Replace existing primary if it exists
+                var existing = FilesCollection.FirstOrDefault(f => f.FileRank == FileRankEnum.Primary);
+                if (existing != null) FilesCollection.Remove(existing);
+            }
 
-                    this.PrimaryFile = fileModel;
-                    this.PrimaryFileSubtitleSelectedItem = this.PrimaryFile.SubtitleCollection.FirstOrDefault();
-                    break;
+            FilesCollection.Add(fileModel);
 
-                case FileRankEnum.Secondary:
+            // Refresh the filtered helper properties
+            RaisePropertyChanged(nameof(PrimaryFile));
+            RaisePropertyChanged(nameof(SecondaryFiles));
 
-                    this.SecondaryFileCollection.Add(fileModel);
-
-                    if(this.PrimaryFileSubtitleSelectedItem != null)
-                    {
-                        SetSecondaryFilesSubtitleSelectedItem(this.PrimaryFileSubtitleSelectedItem.Position);
-                    }
-
-                    break;
+            // Initial selection sync
+            if (fileRank == FileRankEnum.Primary)
+            {
+                PrimaryFileSubtitleSelectedItem = fileModel.SubtitleCollection.FirstOrDefault();
+            }
+            else if (PrimaryFileSubtitleSelectedItem != null)
+            {
+                // If we just added a secondary, sync its selection to the current primary position
+                SyncSecondarySelections(PrimaryFileSubtitleSelectedItem.Position);
             }
         }
 
-        private void ApplyRating(SubtitleModel target, SubtitleRatingEnum newRating)
+        private void SyncSecondarySelections(int position)
         {
-            // Check if this belongs to the Primary file
-            if (PrimaryFile != null && PrimaryFile.SubtitleCollection.Contains(target))
-            {
-                // Sync all secondary files by Position (Index)
-                foreach (var file in SecondaryFileCollection)
-                {
-                    var matchingSub = file.SubtitleCollection
-                        .FirstOrDefault(s => s.Position == target.Position);
-
-                    if (matchingSub != null)
-                    {
-                        matchingSub.RatingCurrent = newRating;
-                    }
-                }
-            }
-        }
-
-        private void SetSecondaryFilesSubtitleSelectedItem(int position)
-        {
-            foreach (var file in SecondaryFileCollection)
+            foreach (var file in SecondaryFiles)
             {
                 file.SubtitleSelectedItem = file.SubtitleCollection.FirstOrDefault(s => s.Position == position);
             }
+        }
+
+        private void ApplyRating(SubtitleModel subtitleModel, SubtitleRatingEnum? newRating)
+        {
+            // User can set ratings for secondary file subtitles independently, but they won't sync to the primary. Only changes to the primary sync to secondaries.
+            var fileWithSubtitle = FilesCollection.FirstOrDefault(f => f.SubtitleCollection.Any(s => s.PK == subtitleModel.PK));
+            if (fileWithSubtitle == null) return;
+
+            // Always update the specific item clicked
+            subtitleModel.RatingCurrent = newRating;
+
+            // If it was a Primary sub, sync all other files at this position
+            if (fileWithSubtitle.FileRank == FileRankEnum.Primary)
+            {
+                foreach (var file in FilesCollection)
+                {
+                    // Skip the file we already updated
+                    if (file == fileWithSubtitle) continue;
+
+                    var sub = file.SubtitleCollection.FirstOrDefault(s => s.Position == subtitleModel.Position);
+                    if (sub != null)
+                    {
+                        sub.RatingCurrent = newRating;
+                    }
+                }
+            }
+
+            foreach (var file in FilesCollection)
+            {
+                _ = file.SetIsDirty();
+            }
+        }
+
+        string Title = "Rating Tool";
+        private void ShowDialog()
+        {
+            var message = "This is a message that should be shown in the dialog.";
+            //using the dialog service as-is
+            _dialogService.ShowDialog(nameof(YesNoDialog), new DialogParameters($"message={message}"), r =>
+            {
+                if (r.Result == ButtonResult.None)
+                    Title = "Result is None";
+                else if (r.Result == ButtonResult.OK)
+                    Title = "Result is OK";
+                else if (r.Result == ButtonResult.Cancel)
+                    Title = "Result is Cancel";
+                else
+                    Title = "I Don't know what you did!?";
+            });
         }
 
         #endregion
 
         #region Properties
 
-        private FileModel primaryFile;
-        public FileModel PrimaryFile
+        private ObservableCollection<FileModel> _filesCollection = new();
+        public ObservableCollection<FileModel> FilesCollection
         {
-            get { return primaryFile; }
-            set { SetProperty(ref primaryFile, value); }
+            get => _filesCollection;
+            set => SetProperty(ref _filesCollection, value);
         }
 
-        private ObservableCollection<FileModel> secondaryFileCollection;
-        public ObservableCollection<FileModel> SecondaryFileCollection
-        {
-            get { return secondaryFileCollection; }
-            set { SetProperty(ref secondaryFileCollection, value); }
-        }
+        // UI Bindings for the two panels
+        public FileModel PrimaryFile => FilesCollection.FirstOrDefault(f => f.FileRank == FileRankEnum.Primary);
+        public IEnumerable<FileModel> SecondaryFiles => FilesCollection.Where(f => f.FileRank == FileRankEnum.Secondary);
 
-        private SubtitleModel primaryFileSubtitleSelectedItem;
+        private SubtitleModel _primaryFileSubtitleSelectedItem;
         public SubtitleModel PrimaryFileSubtitleSelectedItem
         {
-            get { return primaryFileSubtitleSelectedItem; }
+            get => _primaryFileSubtitleSelectedItem;
             set
             {
-                SetProperty(ref primaryFileSubtitleSelectedItem, value);
-
-                if (value != null)
+                if (SetProperty(ref _primaryFileSubtitleSelectedItem, value) && value != null)
                 {
-                    SetSecondaryFilesSubtitleSelectedItem(value.Position);
+                    SyncSecondarySelections(value.Position);
                 }
             }
         }
@@ -155,34 +182,60 @@ namespace Rating.WPF.ViewModels
             }
         }
 
-        private DelegateCommand<SubtitleModel> promoteSubtitle;
-        public DelegateCommand<SubtitleModel> PromoteSubtitleCommand =>
-            promoteSubtitle ?? (promoteSubtitle = new DelegateCommand<SubtitleModel>(ExecutePromoteSubtitleCommand));
+        private DelegateCommand<SubtitleModel?> promoteSubtitle;
+        public DelegateCommand<SubtitleModel?> PromoteSubtitleCommand =>
+            promoteSubtitle ?? (promoteSubtitle = new DelegateCommand<SubtitleModel?>(ExecutePromoteSubtitleCommand));
 
         private void ExecutePromoteSubtitleCommand(SubtitleModel parameter)
         {
-            if (parameter == null || (int)parameter.RatingCurrent == _subtitleRatingEnumMaxVal) return;
+            if (parameter == null) return;
 
-            // Increment the rating of the current subtitle
-            parameter.RatingCurrent = parameter.RatingCurrent++;
+            // A = 1 (Max), E = 5 (Min). 
+            // To 'Promote' (make harder), we move towards A (decrease numeric value).
+            // If it's already A (1), or it's None, we might not want to promote.
+            // Assuming you want: None -> E -> D -> C -> B -> A
 
-            // Check if the subtitle belongs to the Primary file and sync all secondary files respecting the Position (Index)
-            ApplyRating(parameter, parameter.RatingCurrent.Value);
+            SubtitleRatingEnum? newRating;
+
+            if (parameter.RatingCurrent == null || parameter.RatingCurrent == SubtitleRatingEnum.None)
+            {
+                newRating = SubtitleRatingEnum.E;
+            }
+            else if (parameter.RatingCurrent == SubtitleRatingEnum.A)
+            {
+                return; // Already at max
+            }
+            else
+            {
+                newRating = (SubtitleRatingEnum)((int)parameter.RatingCurrent - 1);
+            }
+
+            ApplyRating(parameter, newRating);
         }
 
-        private DelegateCommand<SubtitleModel> demoteSubtitle;
-        public DelegateCommand<SubtitleModel> DemoteSubtitleCommand =>
-            demoteSubtitle ?? (demoteSubtitle = new DelegateCommand<SubtitleModel>(ExecuteDemoteSubtitleCommand));
+        private DelegateCommand<SubtitleModel?> demoteSubtitle;
+        public DelegateCommand<SubtitleModel?> DemoteSubtitleCommand =>
+            demoteSubtitle ?? (demoteSubtitle = new DelegateCommand<SubtitleModel?>(ExecuteDemoteSubtitleCommand));
 
         private void ExecuteDemoteSubtitleCommand(SubtitleModel parameter)
         {
-            if (parameter == null || (int)parameter.RatingCurrent == _subtitleRatingEnumMinVal) return;
+            if (parameter == null || parameter.RatingCurrent == SubtitleRatingEnum.E) return;
+            if (parameter.RatingCurrent == null || parameter.RatingCurrent == SubtitleRatingEnum.None) return;
 
-            // Decrement the rating of the current subtitle
-            parameter.RatingCurrent = parameter.RatingCurrent--;
+            // Move towards E (increase numeric value)
+            var newRating = (SubtitleRatingEnum)((int)parameter.RatingCurrent + 1);
 
-            // Check if the subtitle belongs to the Primary file and sync all secondary files respecting the Position (Index)
-            ApplyRating(parameter, parameter.RatingCurrent.Value);
+            ApplyRating(parameter, newRating);
+        }
+
+        private DelegateCommand<SubtitleModel> removeRating;
+        public DelegateCommand<SubtitleModel> RemoveRatingCommand =>
+            removeRating ?? (removeRating = new DelegateCommand<SubtitleModel>(ExecuteRemoveRatingCommand));
+
+        private void ExecuteRemoveRatingCommand(SubtitleModel parameter)
+        {
+            if (parameter == null) return;
+            ApplyRating(parameter, null);
         }
 
         #endregion

@@ -23,6 +23,7 @@ namespace Rating.WPF.Enums
     // The rating is based on how hard is a phrase for understanding, with A being the hardest and E being the easiest.
     public enum SubtitleRatingEnum
     {
+        None = 0,
         A = 1,
         B = 2,
         C = 3,

@@ -30,6 +30,13 @@ namespace Rating.WPF.Models
             set { SetProperty(ref fileName, value); }
         }
 
+        private bool isDirty;
+        public bool IsDirty
+        {
+            get { return isDirty; }
+            set { SetProperty(ref isDirty, value); }
+        }
+
         /// <summary>
         /// This property is not stored/read in/from file, but used for display purposes only.
         /// </summary>
@@ -69,6 +76,16 @@ namespace Rating.WPF.Models
         {
             get { return subtitleCollection; }
             set { SetProperty(ref subtitleCollection, value); }
+        }
+
+        public bool SetIsDirty()
+        {
+            if (this.SubtitleCollection != null)
+            {
+                this.IsDirty = this.SubtitleCollection.Any(s => s.RatingOriginal != s.RatingCurrent);
+            }
+
+            return this.IsDirty;
         }
     }
 }

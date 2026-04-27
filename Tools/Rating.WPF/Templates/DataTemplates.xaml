@@ -6,11 +6,12 @@
                     xmlns:enum="clr-namespace:Rating.WPF.Enums"
                     xmlns:v="clr-namespace:Rating.WPF.Views">
 
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" x:Shared="False"/>
+
     <DataTemplate x:Key="SubtitleTemplate">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -20,10 +21,13 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
-                       VerticalAlignment="Stretch"
+            <TextBlock Grid.Row="0" Grid.Column="0" Grid.RowSpan="3"
+                       VerticalAlignment="Center"
+                       Margin="5"
+                       FontWeight="Bold"
                        Text="{Binding Position}">
             </TextBlock>
 
@@ -34,18 +38,15 @@
 
             <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"
                        Margin="5,0,0,0"
-                       Text="Rating: ">
-            </TextBlock>
-
-            <TextBlock Grid.Row="1" Grid.Column="2"
-                       Margin="5,0,0,0"
-                       Text="{Binding RatingCurrent}">
+                       VerticalAlignment="Center">
+                    <Run Text="Rating: "/><Run Text="{Binding RatingCurrent}"/>
             </TextBlock>
 
             <Button Grid.Row="1" Grid.Column="4"
                     Margin="5,0,0,0"
                     HorizontalAlignment="Right"
                     Content="Promote"
+                    ToolTip="Promote the subtitle rating, from E(easy) to A(hard)"
                     Command="{Binding DataContext.PromoteSubtitleCommand, RelativeSource={RelativeSource AncestorType={x:Type v:WorkspaceView}}}"
                     CommandParameter="{Binding}">
             </Button>
@@ -54,7 +55,17 @@
                     Margin="5,0,0,0"
                     HorizontalAlignment="Right"
                     Content="Demote"
+                    ToolTip="Demote the subtitle rating, from A(hard) to E(easy)"
                     Command="{Binding DataContext.DemoteSubtitleCommand, RelativeSource={RelativeSource AncestorType={x:Type v:WorkspaceView}}}"
+                    CommandParameter="{Binding}">
+            </Button>
+
+            <Button Grid.Row="1" Grid.Column="6"
+                    Margin="5,0,0,0"
+                    HorizontalAlignment="Right"
+                    Content="Remove"
+                    ToolTip="Remove the subtitle rating. Easy phrase"
+                    Command="{Binding DataContext.RemoveRatingCommand, RelativeSource={RelativeSource AncestorType={x:Type v:WorkspaceView}}}"
                     CommandParameter="{Binding}">
             </Button>
 
@@ -64,8 +75,8 @@
     <DataTemplate x:Key="PrimaryFileTemplate">
         <DataTemplate.Resources>
             <ObjectDataProvider x:Key="dataFromEnum"
-                            MethodName="GetValues"
-                            ObjectType="{x:Type System:Enum}">
+                                MethodName="GetValues"
+                                ObjectType="{x:Type System:Enum}">
                 <ObjectDataProvider.MethodParameters>
                     <x:Type TypeName="enum:LanguageEnum" />
                 </ObjectDataProvider.MethodParameters>
@@ -77,22 +88,48 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-                       Margin="5"
-                       TextTrimming="CharacterEllipsis"
-                       Text="{Binding FileName}"
-                       ToolTip="{Binding FilePath}">
-            </TextBlock>
-            <ComboBox Grid.Row="1" Margin="5"
-                      VerticalAlignment="Top"
-                      ItemsSource="{Binding Source={StaticResource dataFromEnum}}"
-                      SelectedItem="{Binding Language, Mode=TwoWay}">
-            </ComboBox>
-            <ListView Grid.Row="2" Margin="5" Grid.ColumnSpan="2"
+            
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <TextBlock Margin="5"
+                           Text="Language: ">
+                </TextBlock>
+                <ComboBox Margin="5"
+                          Width="150"
+                          ItemsSource="{Binding Source={StaticResource dataFromEnum}}"
+                          SelectedItem="{Binding Language, Mode=TwoWay}">
+                </ComboBox>
+            </StackPanel>
+
+            <Grid Grid.Row="1"
+                  HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Grid.Column="0" Margin="5"
+                           Text="File: ">
+                </TextBlock>
+                <TextBlock Grid.Column="1"
+                           Margin="5"
+                           HorizontalAlignment="Left"
+                           TextTrimming="CharacterEllipsis"
+                           Background="LightGray"
+                           Text="{Binding FileName}"
+                           ToolTip="{Binding FilePath}">
+                </TextBlock>
+                <Rectangle Grid.Column="3"
+                           Margin="10"
+                           VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                           Fill="Red"
+                           ToolTip="File has changes"
+                           Visibility="{Binding IsDirty, Converter={StaticResource BooleanToVisibilityConverter}, TargetNullValue=Collapsed, FallbackValue=Collapsed}">
+                </Rectangle>
+            </Grid>
+
+            <ListView Grid.Row="2" Grid.ColumnSpan="2"
+                      Margin="0,5,0,0"
                       HorizontalContentAlignment="Stretch"
                       AlternationCount="2"
                       VirtualizingStackPanel.IsVirtualizing="True"
@@ -106,8 +143,8 @@
     <DataTemplate x:Key="SecondaryFileTemplate">
         <DataTemplate.Resources>
             <ObjectDataProvider x:Key="dataFromEnum"
-                            MethodName="GetValues"
-                            ObjectType="{x:Type System:Enum}">
+                                MethodName="GetValues"
+                                ObjectType="{x:Type System:Enum}">
                 <ObjectDataProvider.MethodParameters>
                     <x:Type TypeName="enum:LanguageEnum" />
                 </ObjectDataProvider.MethodParameters>
@@ -115,17 +152,41 @@
         </DataTemplate.Resources>
 
         <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="60"/>
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="5"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <ComboBox Grid.Row="1" Margin="5"
-                      VerticalAlignment="Top"
+            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+                       HorizontalAlignment="Left"
+                       TextTrimming="CharacterEllipsis"
+                       Background="LightGray"
+                       Text="{Binding FileName}"
+                       ToolTip="{Binding FilePath}">
+            </TextBlock>
+
+            <Rectangle Grid.Row="1" Grid.Column="0"
+                       Width="5"
+                       Fill="Red"
+                       ToolTip="File has changes"
+                       Visibility="{Binding IsDirty, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+            </Rectangle>
+            <ComboBox Grid.Row="1" Grid.Column="1"
+                      Margin="5"
+                      VerticalAlignment="Center"
+                      Width="100"
                       ItemsSource="{Binding Source={StaticResource dataFromEnum}}"
                       SelectedItem="{Binding Language, Mode=TwoWay}">
             </ComboBox>
-            <ContentControl Grid.Column="1" Content="{Binding SubtitleSelectedItem}" ContentTemplate="{StaticResource SubtitleTemplate}"/>
+            <ContentControl Grid.Row="1" Grid.Column="2"
+                            Content="{Binding SubtitleSelectedItem}"
+                            ContentTemplate="{StaticResource SubtitleTemplate}">
+            </ContentControl>
         </Grid>
     </DataTemplate>
 

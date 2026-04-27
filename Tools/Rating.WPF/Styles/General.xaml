@@ -1,7 +1,7 @@
 ﻿<!-- Subs.Ext\Tools\Rating.WPF\Styles\General.xaml -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    
+
     <Style TargetType="ListViewItem">
         <Style.Triggers>
             <Trigger Property="ItemsControl.AlternationIndex"  Value="0">
