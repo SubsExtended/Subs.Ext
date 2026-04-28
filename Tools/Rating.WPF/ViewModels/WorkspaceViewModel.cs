@@ -121,39 +121,125 @@ namespace Rating.WPF.ViewModels
             }
         }
 
-        string Title = "Rating Tool";
-        private void ShowDialog()
+        private bool ShowYesNoDialog(string message)
         {
-            var message = "This is a message that should be shown in the dialog.";
-            //using the dialog service as-is
+            bool returnValue = false;
+
             _dialogService.ShowDialog(nameof(YesNoDialog), new DialogParameters($"message={message}"), r =>
             {
-                if (r.Result == ButtonResult.None)
-                    Title = "Result is None";
-                else if (r.Result == ButtonResult.OK)
-                    Title = "Result is OK";
-                else if (r.Result == ButtonResult.Cancel)
-                    Title = "Result is Cancel";
+                if (r.Result == ButtonResult.Yes)
+                {
+                    returnValue = true;
+                }
                 else
-                    Title = "I Don't know what you did!?";
+                {
+                    returnValue = false;
+                }
             });
+
+            return returnValue;
         }
 
-        private void DoFileOperation(FileOperationEnum operation)
+        private async Task DoFileOperation(FileOperationEnum operation)
         {
+            var saveFileDialog = new SaveFileDialog
+            {
+                Filter = "SRT files (*.srt)|*.srt",
+            };
+
             switch (operation)
             {
                 case FileOperationEnum.PrimarySave:
-                    // Implement save logic
+                    if(PrimaryFile == null) return;
+                    if (!PrimaryFile.IsDirty) return;
+                    await _fileService.WriteFileAsync(PrimaryFile, PrimaryFile.FilePath, new CancellationToken());
+                    FinalizeFileSave(PrimaryFile);
                     break;
+
                 case FileOperationEnum.PrimarySaveAs:
-                    // Implement save as logic
+                    if (PrimaryFile == null) return;
+                    saveFileDialog.FileName = System.IO.Path.GetFileName(PrimaryFile.FilePath);
+                    if (saveFileDialog.ShowDialog() == true)
+                    {
+                        await _fileService.WriteFileAsync(PrimaryFile, saveFileDialog.FileName, new CancellationToken());
+                        PrimaryFile.FilePath = saveFileDialog.FileName;
+                        FinalizeFileSave(PrimaryFile);
+                    }
                     break;
+
                 case FileOperationEnum.PrimaryClose:
-                    // Implement close logic
+                    if(PrimaryFile == null) return;
+                    if (PrimaryFile.IsDirty)
+                    {
+                        var result = ShowYesNoDialog($"You have unsaved changes in \r\n{PrimaryFile.FilePath}. Do you want to save before closing?");
+                        if (result)
+                        {
+                            await _fileService.WriteFileAsync(PrimaryFile, PrimaryFile.FilePath, new CancellationToken());
+                            FilesCollection.Remove(PrimaryFile);
+                        }
+                    }
+                    else
+                    {
+                        FilesCollection.Remove(PrimaryFile);
+                    }
                     break;
+
+                case FileOperationEnum.SecondaryAllSave:
+                    if (!SecondaryFiles.Any()) return;
+                    foreach (var file in SecondaryFiles)
+                    {
+                        if (!file.IsDirty) continue;
+                        await _fileService.WriteFileAsync(file, file.FilePath, new CancellationToken());
+                        FinalizeFileSave(file);
+                    }
+                    break;
+
+                case FileOperationEnum.SecondaryAllClose:
+                    if (!SecondaryFiles.Any()) return;
+                    List<Guid> filesToRemove = new List<Guid>();
+                    foreach (var file in SecondaryFiles)
+                    {
+                        if (file.IsDirty)
+                        {
+                            var result = ShowYesNoDialog($"You have unsaved changes in \r\n{file.FilePath}. Do you want to save before closing?");
+                            if (result)
+                            {
+                                await _fileService.WriteFileAsync(file, file.FilePath, new CancellationToken());
+                                filesToRemove.Add(file.PK);
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            filesToRemove.Add(file.PK);
+                        }
+
+                        foreach (var v in filesToRemove)
+                        {
+                            var fileToRemove = FilesCollection.FirstOrDefault(f => f.PK == v);
+                            if (fileToRemove != null)
+                            {
+                                FilesCollection.Remove(fileToRemove);
+                            }
+                        }
+                    }
+                    break;
+
                 default:
                     break;
+            }
+        }
+
+        private void FinalizeFileSave(FileModel file)
+        {
+            file.IsDirty = false;
+
+            foreach (var sub in file.SubtitleCollection)
+            {
+                sub.RatingOriginal = sub.RatingCurrent;
             }
         }
 

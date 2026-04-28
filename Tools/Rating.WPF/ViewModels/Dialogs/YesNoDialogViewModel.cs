@@ -31,10 +31,10 @@ namespace Rating.WPF.ViewModels.Dialogs
         {
             ButtonResult result = ButtonResult.None;
 
-            if (parameter?.ToLower() == "true")
-                result = ButtonResult.OK;
-            else if (parameter?.ToLower() == "false")
-                result = ButtonResult.Cancel;
+            if (parameter?.ToLower() == "yes")
+                result = ButtonResult.Yes;
+            else if (parameter?.ToLower() == "no")
+                result = ButtonResult.No;
 
             RaiseRequestClose(new DialogResult(result));
         }
