@@ -38,4 +38,16 @@ namespace Rating.WPF.Enums
         French,
         Russian,
     }
+
+    public enum FileOperationEnum
+    {
+        PrimarySave,
+        PrimarySaveAs,
+        PrimaryClose,
+        SecondarySingleSave,
+        SecondarySingleSaveAs,
+        SecondarySingleClose,
+        SecondaryAllSave,
+        SecondaryAllClose,
+    }
 }

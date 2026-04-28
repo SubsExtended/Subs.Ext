@@ -14,6 +14,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Rating.WPF.ViewModels
 {
@@ -72,12 +73,12 @@ namespace Rating.WPF.ViewModels
             // Initial selection sync
             if (fileRank == FileRankEnum.Primary)
             {
-                PrimaryFileSubtitleSelectedItem = fileModel.SubtitleCollection.FirstOrDefault();
+                PrimaryFileSubtitlesSelectedItem = fileModel.SubtitleCollection.FirstOrDefault();
             }
-            else if (PrimaryFileSubtitleSelectedItem != null)
+            else if (PrimaryFileSubtitlesSelectedItem != null)
             {
                 // If we just added a secondary, sync its selection to the current primary position
-                SyncSecondarySelections(PrimaryFileSubtitleSelectedItem.Position);
+                SyncSecondarySelections(PrimaryFileSubtitlesSelectedItem.Position);
             }
         }
 
@@ -138,9 +139,31 @@ namespace Rating.WPF.ViewModels
             });
         }
 
+        private void DoFileOperation(FileOperationEnum operation)
+        {
+            switch (operation)
+            {
+                case FileOperationEnum.PrimarySave:
+                    // Implement save logic
+                    break;
+                case FileOperationEnum.PrimarySaveAs:
+                    // Implement save as logic
+                    break;
+                case FileOperationEnum.PrimaryClose:
+                    // Implement close logic
+                    break;
+                default:
+                    break;
+            }
+        }
+
         #endregion
 
         #region Properties
+
+        // UI Bindings for the two panels
+        public FileModel PrimaryFile => FilesCollection.FirstOrDefault(f => f.FileRank == FileRankEnum.Primary);
+        public IEnumerable<FileModel> SecondaryFiles => FilesCollection.Where(f => f.FileRank == FileRankEnum.Secondary);
 
         private ObservableCollection<FileModel> _filesCollection = new();
         public ObservableCollection<FileModel> FilesCollection
@@ -149,21 +172,24 @@ namespace Rating.WPF.ViewModels
             set => SetProperty(ref _filesCollection, value);
         }
 
-        // UI Bindings for the two panels
-        public FileModel PrimaryFile => FilesCollection.FirstOrDefault(f => f.FileRank == FileRankEnum.Primary);
-        public IEnumerable<FileModel> SecondaryFiles => FilesCollection.Where(f => f.FileRank == FileRankEnum.Secondary);
-
-        private SubtitleModel _primaryFileSubtitleSelectedItem;
-        public SubtitleModel PrimaryFileSubtitleSelectedItem
+        private SubtitleModel primaryFileSubtitlesSelectedItem;
+        public SubtitleModel PrimaryFileSubtitlesSelectedItem
         {
-            get => _primaryFileSubtitleSelectedItem;
+            get => primaryFileSubtitlesSelectedItem;
             set
             {
-                if (SetProperty(ref _primaryFileSubtitleSelectedItem, value) && value != null)
+                if (SetProperty(ref primaryFileSubtitlesSelectedItem, value) && value != null)
                 {
                     SyncSecondarySelections(value.Position);
                 }
             }
+        }
+
+        private FileModel secondaryFilesSelectedItem;
+        public FileModel SecondaryFilesSelectedItem
+        {
+            get { return secondaryFilesSelectedItem; }
+            set { SetProperty(ref secondaryFilesSelectedItem, value); }
         }
 
         #endregion
@@ -179,6 +205,19 @@ namespace Rating.WPF.ViewModels
             if (parameter.HasValue)
             {
                 await OpenFile(parameter.Value);
+            }
+        }
+
+        private DelegateCommand<FileOperationEnum?> _fileOperation;
+        public DelegateCommand<FileOperationEnum?> FileOperationCommand =>
+            _fileOperation ?? (_fileOperation = new DelegateCommand<FileOperationEnum?>(ExecuteFileOperationCommand));
+
+        void ExecuteFileOperationCommand(FileOperationEnum? parameter)
+        {
+            if (parameter.HasValue)
+            {
+                MessageBox.Show($"You triggered the {parameter.Value} operation. Implement the logic in ExecuteFileOperationCommand.");
+                DoFileOperation(parameter.Value);
             }
         }
 

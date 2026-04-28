@@ -135,7 +135,7 @@
                       VirtualizingStackPanel.IsVirtualizing="True"
                       ItemsSource="{Binding SubtitleCollection}"
                       ItemTemplate="{StaticResource SubtitleTemplate}"
-                      SelectedItem="{Binding DataContext.PrimaryFileSubtitleSelectedItem, RelativeSource={RelativeSource AncestorType={x:Type v:WorkspaceView}}, Mode=TwoWay}">
+                      SelectedItem="{Binding DataContext.PrimaryFileSubtitlesSelectedItem, RelativeSource={RelativeSource AncestorType={x:Type v:WorkspaceView}}, Mode=TwoWay}">
             </ListView>
         </Grid>
     </DataTemplate>

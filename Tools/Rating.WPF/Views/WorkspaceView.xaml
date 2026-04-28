@@ -4,6 +4,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:System="clr-namespace:System;assembly=mscorlib"
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
              xmlns:local="clr-namespace:Rating.WPF.Views"
@@ -11,7 +12,18 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
-    <Grid ShowGridLines="True">
+    <UserControl.Resources>
+        <ObjectDataProvider x:Key="dataFromEnum"
+                                MethodName="GetValues"
+                                ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="enum:FileOperationEnum" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </UserControl.Resources>
+
+
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -41,11 +53,67 @@
         <GroupBox Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"
                   Margin="5"
                   Header="Primary File">
-            <ContentControl Grid.Row="1" Margin="5"
-                            VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                            ContentTemplate="{StaticResource PrimaryFileTemplate}"
-                            Content="{Binding PrimaryFile}">
-            </ContentControl>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding PrimaryFile}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+
+                <ContentControl Grid.Row="0"
+                                Margin="5"
+                                VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                                ContentTemplate="{StaticResource PrimaryFileTemplate}"
+                                Content="{Binding PrimaryFile}">
+                </ContentControl>
+
+                <Grid Grid.Row="1"
+                      HorizontalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="1"
+                            Margin="5"
+                            Padding="10,5"
+                            HorizontalAlignment="Right"
+                            Content="Save as ..."
+                            Command="{Binding FileOperationCommand}"
+                            CommandParameter="{x:Static enum:FileOperationEnum.PrimarySaveAs}">
+                    </Button>
+
+                    <Button Grid.Column="2"
+                            Margin="5"
+                            Padding="10,5"
+                            HorizontalAlignment="Right"
+                            Content="Save"
+                            Command="{Binding FileOperationCommand}"
+                            CommandParameter="{x:Static enum:FileOperationEnum.PrimarySave}">
+                    </Button>
+
+                    <Button Grid.Column="3"
+                            Margin="5"
+                            Padding="10,5"
+                            HorizontalAlignment="Right"
+                            Content="Close"
+                            Command="{Binding FileOperationCommand}"
+                            CommandParameter="{x:Static enum:FileOperationEnum.PrimaryClose}">
+                    </Button>
+
+                </Grid>
+            </Grid>
         </GroupBox>
 
         <Border x:Name="VLCPlayerPlace"
@@ -58,18 +126,102 @@
                   Margin="5"
                   VerticalAlignment="Stretch"
                   Header="Secondary Files">
-            <ListView Grid.Row="1" Margin="5"
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SecondaryFiles.Count}" Value="0">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+
+                <ListView Grid.Row="0" Margin="5"
                       VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                      ItemsSource="{Binding SecondaryFiles}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <ContentControl VerticalAlignment="Stretch"
+                      ItemsSource="{Binding SecondaryFiles}"
+                      SelectedItem="{Binding SecondaryFilesSelectedItem, Mode=TwoWay}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ContentControl VerticalAlignment="Stretch"
                                         ContentTemplate="{StaticResource SecondaryFileTemplate}"
                                         Content="{Binding}">
-                        </ContentControl>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                            </ContentControl>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="1"
+                      HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button Grid.Column="1"
+                            Margin="5"
+                            Padding="10,5"
+                            HorizontalAlignment="Right"
+                            Content="Save all"
+                            Command="{Binding FileOperationCommand}"
+                            CommandParameter="{x:Static enum:FileOperationEnum.SecondaryAllSave}">
+                        </Button>
+
+                        <Button Grid.Column="2"
+                            Margin="5"
+                            Padding="10,5"
+                            HorizontalAlignment="Right"
+                            Content="Close all"
+                            Command="{Binding FileOperationCommand}"
+                            CommandParameter="{x:Static enum:FileOperationEnum.SecondaryAllClose}">
+                        </Button>
+
+                        <Button Grid.Column="3"
+                            Margin="5"
+                            Padding="10,5"
+                            HorizontalAlignment="Right"
+                            Content="Save as ..."
+                            Command="{Binding FileOperationCommand}"
+                            CommandParameter="{x:Static enum:FileOperationEnum.SecondarySingleSaveAs}">
+                        </Button>
+
+                        <Button Grid.Column="4"
+                            Margin="5"
+                            Padding="10,5"
+                            HorizontalAlignment="Right"
+                            Content="Save"
+                            Command="{Binding FileOperationCommand}"
+                            CommandParameter="{x:Static enum:FileOperationEnum.SecondarySingleSave}">
+                        </Button>
+
+                        <Button Grid.Column="5"
+                            Margin="5"
+                            Padding="10,5"
+                            HorizontalAlignment="Right"
+                            Content="Close"
+                            Command="{Binding FileOperationCommand}"
+                            CommandParameter="{x:Static enum:FileOperationEnum.SecondarySingleClose}">
+                        </Button>
+
+                    </Grid>
+                </Grid>
+            </Grid>
         </GroupBox>
 
     </Grid>
