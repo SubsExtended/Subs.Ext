@@ -5,6 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:System="clr-namespace:System;assembly=mscorlib"
+             xmlns:vlc="clr-namespace:LibVLCSharp.WPF;assembly=LibVLCSharp.WPF"
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
              xmlns:local="clr-namespace:Rating.WPF.Views"
@@ -40,12 +41,12 @@
                     Orientation="Horizontal" Margin="5">
             <Button Margin="5"
                     Content="Open Primary File"
-                    Command="{Binding OpenFileCommand}"
+                    Command="{Binding OpenSubtitlesFileCommand}"
                     CommandParameter="{x:Static enum:FileRankEnum.Primary}">
             </Button>
             <Button Margin="5"
                     Content="Open Secondary File"
-                    Command="{Binding OpenFileCommand}"
+                    Command="{Binding OpenSubtitlesFileCommand}"
                     CommandParameter="{x:Static enum:FileRankEnum.Secondary}">
             </Button>
         </StackPanel>
@@ -116,12 +117,14 @@
             </Grid>
         </GroupBox>
 
-        <Border x:Name="VLCPlayerPlace"
-                Grid.Row="1" Grid.Column="1"
-                Width="100" Height="100"
-                VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-        </Border>
-
+        <Grid Grid.Row="1" Grid.Column="1">
+            
+            
+            <vlc:VideoView MediaPlayer="{Binding MediaPlayer}" 
+                       HorizontalAlignment="Stretch" 
+                       VerticalAlignment="Stretch" />
+        </Grid>
+        
         <GroupBox Grid.Row="2" Grid.Column="1"
                   Margin="5"
                   VerticalAlignment="Stretch"

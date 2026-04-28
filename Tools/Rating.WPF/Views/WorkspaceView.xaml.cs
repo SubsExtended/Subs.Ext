@@ -25,6 +25,14 @@ namespace Rating.WPF.Views
         public WorkspaceView()
         {
             InitializeComponent();
+
+            this.Unloaded += (s, e) =>
+            {
+                if (DataContext is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
+            };
         }
     }
 }

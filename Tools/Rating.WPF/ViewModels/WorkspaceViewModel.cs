@@ -1,8 +1,10 @@
 ﻿// Subs.Ext\Tools\Rating.WPF\ViewModels\WorkspaceViewModel.cs
 
+using LibVLCSharp.Shared;
 using Microsoft.Win32;
 using Prism.Commands;
 using Prism.Mvvm;
+using Prism.Regions;
 using Prism.Services.Dialogs;
 using Rating.WPF.Dialogs;
 using Rating.WPF.Enums;
@@ -11,20 +13,20 @@ using Rating.WPF.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace Rating.WPF.ViewModels
 {
-    public class WorkspaceViewModel : BindableBase
+    public class WorkspaceViewModel : BindableBase, IDisposable
     {
         #region Fields
 
         private readonly IFileService _fileService;
-
         private IDialogService _dialogService;
+        private LibVLC _libVLC;
 
         #endregion
 
@@ -34,13 +36,18 @@ namespace Rating.WPF.ViewModels
         {
             this._fileService = fileService;
             this._dialogService = dialogService;
+
+            // Initialize VLC
+            Core.Initialize();
+            this._libVLC = new LibVLC();
+            MediaPlayer = new MediaPlayer(_libVLC);
         }
 
         #endregion
 
         #region Methods
 
-        private async Task OpenFile(FileRankEnum fileRank)
+        private async Task OpenSubtitlesFile(FileRankEnum fileRank)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "SRT files (*.srt)|*.srt";
@@ -61,7 +68,7 @@ namespace Rating.WPF.ViewModels
             {
                 // Replace existing primary if it exists
                 var existing = FilesCollection.FirstOrDefault(f => f.FileRank == FileRankEnum.Primary);
-                if (existing != null) FilesCollection.Remove(existing);
+                if (existing != null) return;
             }
 
             FilesCollection.Add(fileModel);
@@ -150,25 +157,29 @@ namespace Rating.WPF.ViewModels
             switch (operation)
             {
                 case FileOperationEnum.PrimarySave:
-                    if(PrimaryFile == null) return;
+                    if (PrimaryFile == null) return;
                     if (!PrimaryFile.IsDirty) return;
+
                     await _fileService.WriteFileAsync(PrimaryFile, PrimaryFile.FilePath, new CancellationToken());
                     FinalizeFileSave(PrimaryFile);
+
                     break;
 
                 case FileOperationEnum.PrimarySaveAs:
                     if (PrimaryFile == null) return;
-                    saveFileDialog.FileName = System.IO.Path.GetFileName(PrimaryFile.FilePath);
+
+                    saveFileDialog.FileName = Path.GetFileName(PrimaryFile.FilePath);
                     if (saveFileDialog.ShowDialog() == true)
                     {
                         await _fileService.WriteFileAsync(PrimaryFile, saveFileDialog.FileName, new CancellationToken());
                         PrimaryFile.FilePath = saveFileDialog.FileName;
                         FinalizeFileSave(PrimaryFile);
                     }
+
                     break;
 
                 case FileOperationEnum.PrimaryClose:
-                    if(PrimaryFile == null) return;
+                    if (PrimaryFile == null) return;
                     if (PrimaryFile.IsDirty)
                     {
                         var result = ShowYesNoDialog($"You have unsaved changes in \r\n{PrimaryFile.FilePath}. Do you want to save before closing?");
@@ -182,20 +193,24 @@ namespace Rating.WPF.ViewModels
                     {
                         FilesCollection.Remove(PrimaryFile);
                     }
+
                     break;
 
                 case FileOperationEnum.SecondaryAllSave:
                     if (!SecondaryFiles.Any()) return;
+
                     foreach (var file in SecondaryFiles)
                     {
                         if (!file.IsDirty) continue;
                         await _fileService.WriteFileAsync(file, file.FilePath, new CancellationToken());
                         FinalizeFileSave(file);
                     }
+
                     break;
 
                 case FileOperationEnum.SecondaryAllClose:
                     if (!SecondaryFiles.Any()) return;
+
                     List<Guid> filesToRemove = new List<Guid>();
                     foreach (var file in SecondaryFiles)
                     {
@@ -226,6 +241,47 @@ namespace Rating.WPF.ViewModels
                             }
                         }
                     }
+
+                    break;
+
+                case FileOperationEnum.SecondarySingleSave:
+                    if (SecondaryFilesSelectedItem == null) return;
+                    if (!SecondaryFilesSelectedItem.IsDirty) return;
+
+                    await _fileService.WriteFileAsync(SecondaryFilesSelectedItem, SecondaryFilesSelectedItem.FilePath, new CancellationToken());
+                    FinalizeFileSave(SecondaryFilesSelectedItem);
+
+                    break;
+
+                case FileOperationEnum.SecondarySingleSaveAs:
+                    if (SecondaryFilesSelectedItem == null) return;
+
+                    saveFileDialog.FileName = Path.GetFileName(SecondaryFilesSelectedItem.FilePath);
+
+                    if (saveFileDialog.ShowDialog() == true)
+                    {
+                        await _fileService.WriteFileAsync(SecondaryFilesSelectedItem, saveFileDialog.FileName, new CancellationToken());
+                        SecondaryFilesSelectedItem.FilePath = saveFileDialog.FileName;
+                        FinalizeFileSave(SecondaryFilesSelectedItem);
+                    }
+
+                    break;
+
+                case FileOperationEnum.SecondarySingleClose:
+                    if (SecondaryFilesSelectedItem == null) return;
+                    if (SecondaryFilesSelectedItem.IsDirty)
+                    {
+                        var result = ShowYesNoDialog($"You have unsaved changes in \r\n{SecondaryFilesSelectedItem.FilePath}. Do you want to save before closing?");
+                        if (result)
+                        {
+                            await _fileService.WriteFileAsync(SecondaryFilesSelectedItem, SecondaryFilesSelectedItem.FilePath, new CancellationToken());
+                            FilesCollection.Remove(SecondaryFilesSelectedItem);
+                        }
+                    }
+                    else
+                    {
+                        FilesCollection.Remove(SecondaryFilesSelectedItem);
+                    }
                     break;
 
                 default:
@@ -243,6 +299,18 @@ namespace Rating.WPF.ViewModels
             }
         }
 
+        private void PlayVideo(string videoPath)
+        {
+            using var media = new Media(_libVLC, new Uri(videoPath));
+            MediaPlayer.Play(media);
+        }
+
+        // Command to seek to a specific subtitle's time
+        public void SeekToSubtitle(TimeSpan time)
+        {
+            MediaPlayer.Time = (long)time.TotalMilliseconds;
+        }
+
         #endregion
 
         #region Properties
@@ -251,17 +319,17 @@ namespace Rating.WPF.ViewModels
         public FileModel PrimaryFile => FilesCollection.FirstOrDefault(f => f.FileRank == FileRankEnum.Primary);
         public IEnumerable<FileModel> SecondaryFiles => FilesCollection.Where(f => f.FileRank == FileRankEnum.Secondary);
 
-        private ObservableCollection<FileModel> _filesCollection = new();
+        private ObservableCollection<FileModel> filesCollection = new();
         public ObservableCollection<FileModel> FilesCollection
         {
-            get => _filesCollection;
-            set => SetProperty(ref _filesCollection, value);
+            get { return filesCollection; }
+            set { SetProperty(ref filesCollection, value); }
         }
 
         private SubtitleModel primaryFileSubtitlesSelectedItem;
         public SubtitleModel PrimaryFileSubtitlesSelectedItem
         {
-            get => primaryFileSubtitlesSelectedItem;
+            get { return primaryFileSubtitlesSelectedItem; }
             set
             {
                 if (SetProperty(ref primaryFileSubtitlesSelectedItem, value) && value != null)
@@ -278,32 +346,38 @@ namespace Rating.WPF.ViewModels
             set { SetProperty(ref secondaryFilesSelectedItem, value); }
         }
 
+        private MediaPlayer mediaPlayer;
+        public MediaPlayer MediaPlayer
+        {
+            get { return mediaPlayer; }
+            set { SetProperty(ref mediaPlayer, value); }
+        }
+
         #endregion
 
         #region Commands
 
-        private DelegateCommand<FileRankEnum?> openFile;
-        public DelegateCommand<FileRankEnum?> OpenFileCommand =>
-            openFile ?? (openFile = new DelegateCommand<FileRankEnum?>(ExecuteOpenFileCommand));
+        private DelegateCommand<FileRankEnum?> openSubtitlesFile;
+        public DelegateCommand<FileRankEnum?> OpenSubtitlesFileCommand =>
+            openSubtitlesFile ?? (openSubtitlesFile = new DelegateCommand<FileRankEnum?>(ExecuteOpenSubtitlesFileCommand));
 
-        async void ExecuteOpenFileCommand(FileRankEnum? parameter)
+        async void ExecuteOpenSubtitlesFileCommand(FileRankEnum? parameter)
         {
             if (parameter.HasValue)
             {
-                await OpenFile(parameter.Value);
+                await OpenSubtitlesFile(parameter.Value);
             }
         }
 
-        private DelegateCommand<FileOperationEnum?> _fileOperation;
+        private DelegateCommand<FileOperationEnum?> fileOperation;
         public DelegateCommand<FileOperationEnum?> FileOperationCommand =>
-            _fileOperation ?? (_fileOperation = new DelegateCommand<FileOperationEnum?>(ExecuteFileOperationCommand));
+            fileOperation ?? (fileOperation = new DelegateCommand<FileOperationEnum?>(ExecuteFileOperationCommand));
 
-        void ExecuteFileOperationCommand(FileOperationEnum? parameter)
+        async void ExecuteFileOperationCommand(FileOperationEnum? parameter)
         {
             if (parameter.HasValue)
             {
-                MessageBox.Show($"You triggered the {parameter.Value} operation. Implement the logic in ExecuteFileOperationCommand.");
-                DoFileOperation(parameter.Value);
+                await DoFileOperation(parameter.Value);
             }
         }
 
@@ -363,6 +437,19 @@ namespace Rating.WPF.ViewModels
             ApplyRating(parameter, null);
         }
 
+        #endregion
+
+        #region Implementation
+
+        public void Dispose()
+        {
+            // Stop playback first
+            MediaPlayer?.Stop();
+
+            // Dispose in order: Player -> Media (if any) -> LibVLC
+            MediaPlayer?.Dispose();
+            _libVLC?.Dispose();
+        }
         #endregion
     }
 }
