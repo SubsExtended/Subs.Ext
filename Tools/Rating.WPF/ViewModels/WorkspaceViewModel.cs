@@ -69,7 +69,10 @@ namespace Rating.WPF.ViewModels
             {
                 // Replace existing primary if it exists
                 var existing = FilesCollection.FirstOrDefault(f => f.FileRank == FileRankEnum.Primary);
-                if (existing != null) return;
+                if (existing != null)
+                {
+                    FilesCollection.Remove(existing);
+                }
             }
 
             FilesCollection.Add(fileModel);
@@ -169,13 +172,7 @@ namespace Rating.WPF.ViewModels
                 case FileOperationEnum.PrimarySaveAs:
                     if (PrimaryFile == null) return;
 
-                    saveFileDialog.FileName = Path.GetFileName(PrimaryFile.FilePath);
-                    if (saveFileDialog.ShowDialog() == true)
-                    {
-                        await _fileService.WriteFileAsync(PrimaryFile, saveFileDialog.FileName, new CancellationToken());
-                        PrimaryFile.FilePath = saveFileDialog.FileName;
-                        FinalizeFileSave(PrimaryFile);
-                    }
+                    FileSaveAs(PrimaryFile);
 
                     break;
 
@@ -257,14 +254,7 @@ namespace Rating.WPF.ViewModels
                 case FileOperationEnum.SecondarySingleSaveAs:
                     if (SecondaryFilesSelectedItem == null) return;
 
-                    saveFileDialog.FileName = Path.GetFileName(SecondaryFilesSelectedItem.FilePath);
-
-                    if (saveFileDialog.ShowDialog() == true)
-                    {
-                        await _fileService.WriteFileAsync(SecondaryFilesSelectedItem, saveFileDialog.FileName, new CancellationToken());
-                        SecondaryFilesSelectedItem.FilePath = saveFileDialog.FileName;
-                        FinalizeFileSave(SecondaryFilesSelectedItem);
-                    }
+                    FileSaveAs(SecondaryFilesSelectedItem);
 
                     break;
 
@@ -292,11 +282,27 @@ namespace Rating.WPF.ViewModels
 
         private void FinalizeFileSave(FileModel file)
         {
-            file.IsDirty = false;
-
             foreach (var sub in file.SubtitleCollection)
             {
                 sub.RatingOriginal = sub.RatingCurrent;
+            }
+
+            _ = file.SetIsDirty();
+        }
+
+        private void FileSaveAs(FileModel file)
+        {
+            var saveFileDialog = new SaveFileDialog
+            {
+                Filter = "SRT files (*.srt)|*.srt",
+                FileName = Path.GetFileName(file.FilePath)
+            };
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                _ = _fileService.WriteFileAsync(file, saveFileDialog.FileName, new CancellationToken());
+                file.FilePath = saveFileDialog.FileName;
+                file.FileName = Path.GetFileName(saveFileDialog.FileName);
+                FinalizeFileSave(file);
             }
         }
 
