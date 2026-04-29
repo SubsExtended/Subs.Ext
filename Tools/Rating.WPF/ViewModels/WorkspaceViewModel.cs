@@ -342,7 +342,7 @@ namespace Rating.WPF.ViewModels
         }
 
         // Command to seek to a specific subtitle's time
-        private void SeekToPrimaryFileSubtitlesSelectedItem()
+        private void MediaPlayerSeekToPrimaryFileSubtitlesSelectedItem()
         {
             if (PrimaryFileSubtitlesSelectedItem != null && MediaPlayer != null && MediaPlayer.Media != null)
             {
@@ -350,7 +350,7 @@ namespace Rating.WPF.ViewModels
             }
         }
 
-        private void MuteMediaPlayer(bool mute)
+        private void MediaPlayerMute(bool mute)
         {
             if (MediaPlayer != null && MediaPlayer.Media != null)
             {
@@ -358,7 +358,7 @@ namespace Rating.WPF.ViewModels
             }
         }
 
-        private void PauseMediaPlayer(bool pause)
+        private void MediaPlayerPause(bool pause)
         {
             if (MediaPlayer != null && MediaPlayer.Media != null)
             {
@@ -383,7 +383,6 @@ namespace Rating.WPF.ViewModels
             App.Current.Dispatcher.Invoke(() =>
             {
                 MediaFileAudioTracks = GetAudioTrackList();
-
             });
         }
 
@@ -415,7 +414,7 @@ namespace Rating.WPF.ViewModels
 
                 if (value != null)
                 {
-                    SeekToPrimaryFileSubtitlesSelectedItem();
+                    MediaPlayerSeekToPrimaryFileSubtitlesSelectedItem();
                 }
             }
         }
@@ -441,7 +440,7 @@ namespace Rating.WPF.ViewModels
             set
             {
                 SetProperty(ref mediaPlayerIsMuted, value);
-                MuteMediaPlayer(value);
+                MediaPlayerMute(value);
             }
         }
 
@@ -452,7 +451,7 @@ namespace Rating.WPF.ViewModels
             set
             {
                 SetProperty(ref mediaPlayerIsPaused, value);
-                PauseMediaPlayer(value);
+                MediaPlayerPause(value);
             }
         }
 
@@ -516,7 +515,7 @@ namespace Rating.WPF.ViewModels
 
         void ExecuteReplaySubtitleCommand()
         {
-            SeekToPrimaryFileSubtitlesSelectedItem();
+            MediaPlayerSeekToPrimaryFileSubtitlesSelectedItem();
         }
 
         private DelegateCommand<FileOperationEnum?> fileOperationCommand;
