@@ -25,8 +25,8 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
+                       Margin="10,5"
                        VerticalAlignment="Center"
-                       Margin="5"
                        FontWeight="Bold"
                        Text="{Binding Position}">
             </TextBlock>
@@ -188,13 +188,26 @@
                        ToolTip="File has changes"
                        Visibility="{Binding IsDirty, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
             </Rectangle>
-            <ComboBox Grid.Row="1" Grid.Column="1"
-                      Margin="5"
-                      VerticalAlignment="Center"
-                      Width="100"
-                      ItemsSource="{Binding Source={StaticResource dataFromEnum}}"
-                      SelectedItem="{Binding Language, Mode=TwoWay}">
-            </ComboBox>
+
+            <Grid Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0"
+                           Text="Language:">
+                </TextBlock>
+                
+                <ComboBox Grid.Row="1"
+                          Margin="5"
+                          Width="100"
+                          ItemsSource="{Binding Source={StaticResource dataFromEnum}}"
+                          SelectedItem="{Binding Language, Mode=TwoWay}">
+                </ComboBox>
+
+            </Grid>
+
             <ContentControl Grid.Row="1" Grid.Column="2"
                             Content="{Binding SubtitleSelectedItem}"
                             ContentTemplate="{StaticResource SubtitleTemplate}">

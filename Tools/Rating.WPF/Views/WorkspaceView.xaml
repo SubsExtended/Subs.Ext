@@ -40,16 +40,19 @@
                     HorizontalAlignment="Stretch"
                     Orientation="Horizontal" Margin="5">
             <Button Margin="5"
+                    Padding="10,5"
                     Content="Open Primary File"
                     Command="{Binding OpenSubtitlesFileCommand}"
                     CommandParameter="{x:Static enum:FileRankEnum.Primary}">
             </Button>
             <Button Margin="5"
+                    Padding="10,5"
                     Content="Open Secondary File"
                     Command="{Binding OpenSubtitlesFileCommand}"
                     CommandParameter="{x:Static enum:FileRankEnum.Secondary}">
             </Button>
             <Button Margin="5"
+                    Padding="10,5"
                     Content="Open Media File"
                     Command="{Binding OpenMediaFileCommand}">
             </Button>
@@ -124,7 +127,7 @@
         <GroupBox Grid.Row="1" Grid.Column="1"
                   Margin="5"
                   Height="300"
-                  Header="Media Player">
+                  Header="VLC Media Player">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -134,8 +137,12 @@
 
                 <TextBlock Grid.Row="0"
                            Margin="5"
+                           HorizontalAlignment="Left"
+                           TextTrimming="CharacterEllipsis"
+                           Background="LightGray"
+                           FontSize="12"
                            Text="{Binding MediaFilename}"
-                           VerticalAlignment="Center">
+                           ToolTip="{Binding MediaFilename}">
                 </TextBlock>
 
                 <vlc:VideoView Grid.Row="1"
@@ -146,6 +153,9 @@
                 <Grid Grid.Row="2"
                       HorizontalAlignment="Stretch">
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
@@ -161,6 +171,7 @@
                     <ComboBox Grid.Column="1"
                               Margin="5"
                               VerticalAlignment="Center"
+                              MinWidth="100"
                               ItemsSource="{Binding MediaFileAudioTracks}"
                               SelectedItem="{Binding MediaFileAudioTrackSelectedItem, Mode=TwoWay}">
                         <ComboBox.ItemTemplate>
@@ -170,27 +181,31 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <!--<Button Grid.Column="1"
-                            Margin="5"
-                            Padding="10,5"
-                            HorizontalAlignment="Right"
-                            Content="Play"
-                            Command="{Binding PlayMediaCommand}">
-                    </Button>
-                    <Button Grid.Column="2"
-                            Margin="5"
-                            Padding="10,5"
-                            HorizontalAlignment="Right"
-                            Content="Pause"
-                            Command="{Binding PauseMediaCommand}">
-                    </Button>
                     <Button Grid.Column="3"
                             Margin="5"
                             Padding="10,5"
                             HorizontalAlignment="Right"
-                            Content="Stop"
-                            Command="{Binding StopMediaCommand}">
-                    </Button>-->
+                            Content="Replay Subtitle"
+                            Command="{Binding ReplaySubtitleCommand}">
+                    </Button>
+
+                    <ToggleButton Grid.Column="4"
+                                  Margin="5"
+                                  Padding="10,5"
+                                  VerticalAlignment="Center"
+                                  Content="Mute"
+                                  IsChecked="{Binding MediaPlayerIsMuted, Mode=TwoWay}">
+                    </ToggleButton>
+
+                    <ToggleButton Grid.Column="5"
+                                  Margin="5"
+                                  Padding="10,5"
+                                  VerticalAlignment="Center"
+                                  Content="Pause"
+                                  IsChecked="{Binding MediaPlayerIsPaused, Mode=TwoWay}">
+                    </ToggleButton>
+
+
                 </Grid>
             </Grid>
         </GroupBox>

@@ -304,7 +304,7 @@ namespace Rating.WPF.ViewModels
         {
             var openFileDialog = new OpenFileDialog
             {
-                Filter = "Video Files|*.mp4;*.avi;*.mkv;*.mov;*.wmv"
+                Filter = "Video/audio Files|*.mp4;*.avi;*.mkv;*.mov;*.wmv;*.mp3;*.wav;*.flac"
             };
 
             if (openFileDialog.ShowDialog() == true)
@@ -342,11 +342,34 @@ namespace Rating.WPF.ViewModels
         }
 
         // Command to seek to a specific subtitle's time
-        private void SeekToSubtitle(TimeSpan time)
+        private void SeekToPrimaryFileSubtitlesSelectedItem()
+        {
+            if (PrimaryFileSubtitlesSelectedItem != null && MediaPlayer != null && MediaPlayer.Media != null)
+            {
+                MediaPlayer.Time = (long)PrimaryFileSubtitlesSelectedItem.TimeFrom.TotalMilliseconds;
+            }
+        }
+
+        private void MuteMediaPlayer(bool mute)
         {
             if (MediaPlayer != null && MediaPlayer.Media != null)
             {
-                MediaPlayer.Time = (long)time.TotalMilliseconds;
+                MediaPlayer.Mute = mute;
+            }
+        }
+
+        private void PauseMediaPlayer(bool pause)
+        {
+            if (MediaPlayer != null && MediaPlayer.Media != null)
+            {
+                if (pause)
+                {
+                    MediaPlayer.Pause();
+                }
+                else
+                {
+                    MediaPlayer.Play();
+                }
             }
         }
 
@@ -392,7 +415,7 @@ namespace Rating.WPF.ViewModels
 
                 if (value != null)
                 {
-                    SeekToSubtitle(value.TimeFrom);
+                    SeekToPrimaryFileSubtitlesSelectedItem();
                 }
             }
         }
@@ -409,6 +432,28 @@ namespace Rating.WPF.ViewModels
         {
             get { return mediaPlayer; }
             set { SetProperty(ref mediaPlayer, value); }
+        }
+
+        private bool mediaPlayerIsMuted;
+        public bool MediaPlayerIsMuted
+        {
+            get { return mediaPlayerIsMuted; }
+            set
+            {
+                SetProperty(ref mediaPlayerIsMuted, value);
+                MuteMediaPlayer(value);
+            }
+        }
+
+        private bool mediaPlayerIsPaused;
+        public bool MediaPlayerIsPaused
+        {
+            get { return mediaPlayerIsPaused; }
+            set
+            {
+                SetProperty(ref mediaPlayerIsPaused, value);
+                PauseMediaPlayer(value);
+            }
         }
 
         private string mediaFilename;
@@ -465,6 +510,15 @@ namespace Rating.WPF.ViewModels
             OpenMediaFile();
         }
 
+        private DelegateCommand replaySubtitleCommand;
+        public DelegateCommand ReplaySubtitleCommand =>
+            replaySubtitleCommand ?? (replaySubtitleCommand = new DelegateCommand(ExecuteReplaySubtitleCommand));
+
+        void ExecuteReplaySubtitleCommand()
+        {
+            SeekToPrimaryFileSubtitlesSelectedItem();
+        }
+
         private DelegateCommand<FileOperationEnum?> fileOperationCommand;
         public DelegateCommand<FileOperationEnum?> FileOperationCommand =>
             fileOperationCommand ?? (fileOperationCommand = new DelegateCommand<FileOperationEnum?>(ExecuteFileOperationCommand));
@@ -477,9 +531,9 @@ namespace Rating.WPF.ViewModels
             }
         }
 
-        private DelegateCommand<SubtitleModel?> promoteSubtitleCommand;
-        public DelegateCommand<SubtitleModel?> PromoteSubtitleCommand =>
-            promoteSubtitleCommand ?? (promoteSubtitleCommand = new DelegateCommand<SubtitleModel?>(ExecutePromoteSubtitleCommand));
+        private DelegateCommand<SubtitleModel> promoteSubtitleCommand;
+        public DelegateCommand<SubtitleModel> PromoteSubtitleCommand =>
+            promoteSubtitleCommand ?? (promoteSubtitleCommand = new DelegateCommand<SubtitleModel>(ExecutePromoteSubtitleCommand));
 
         private void ExecutePromoteSubtitleCommand(SubtitleModel parameter)
         {
@@ -508,9 +562,9 @@ namespace Rating.WPF.ViewModels
             ApplyRating(parameter, newRating);
         }
 
-        private DelegateCommand<SubtitleModel?> demoteSubtitleCommand;
-        public DelegateCommand<SubtitleModel?> DemoteSubtitleCommand =>
-            demoteSubtitleCommand ?? (demoteSubtitleCommand = new DelegateCommand<SubtitleModel?>(ExecuteDemoteSubtitleCommand));
+        private DelegateCommand<SubtitleModel> demoteSubtitleCommand;
+        public DelegateCommand<SubtitleModel> DemoteSubtitleCommand =>
+            demoteSubtitleCommand ?? (demoteSubtitleCommand = new DelegateCommand<SubtitleModel>(ExecuteDemoteSubtitleCommand));
 
         private void ExecuteDemoteSubtitleCommand(SubtitleModel parameter)
         {
