@@ -49,6 +49,10 @@
                     Command="{Binding OpenSubtitlesFileCommand}"
                     CommandParameter="{x:Static enum:FileRankEnum.Secondary}">
             </Button>
+            <Button Margin="5"
+                    Content="Open Media File"
+                    Command="{Binding OpenMediaFileCommand}">
+            </Button>
         </StackPanel>
 
         <GroupBox Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"
@@ -117,13 +121,79 @@
             </Grid>
         </GroupBox>
 
-        <Grid Grid.Row="1" Grid.Column="1">
-            
-            
-            <vlc:VideoView MediaPlayer="{Binding MediaPlayer}" 
-                       HorizontalAlignment="Stretch" 
-                       VerticalAlignment="Stretch" />
-        </Grid>
+        <GroupBox Grid.Row="1" Grid.Column="1"
+                  Margin="5"
+                  Height="300"
+                  Header="Media Player">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0"
+                           Margin="5"
+                           Text="{Binding MediaFilename}"
+                           VerticalAlignment="Center">
+                </TextBlock>
+
+                <vlc:VideoView Grid.Row="1"
+                               VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                               MediaPlayer="{Binding MediaPlayer}">
+                </vlc:VideoView>
+
+                <Grid Grid.Row="2"
+                      HorizontalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0"
+                               Margin="5"
+                               VerticalAlignment="Center"
+                               Text="Audio track: ">
+                    </TextBlock>
+
+                    <ComboBox Grid.Column="1"
+                              Margin="5"
+                              VerticalAlignment="Center"
+                              ItemsSource="{Binding MediaFileAudioTracks}"
+                              SelectedItem="{Binding MediaFileAudioTrackSelectedItem, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <!--<Button Grid.Column="1"
+                            Margin="5"
+                            Padding="10,5"
+                            HorizontalAlignment="Right"
+                            Content="Play"
+                            Command="{Binding PlayMediaCommand}">
+                    </Button>
+                    <Button Grid.Column="2"
+                            Margin="5"
+                            Padding="10,5"
+                            HorizontalAlignment="Right"
+                            Content="Pause"
+                            Command="{Binding PauseMediaCommand}">
+                    </Button>
+                    <Button Grid.Column="3"
+                            Margin="5"
+                            Padding="10,5"
+                            HorizontalAlignment="Right"
+                            Content="Stop"
+                            Command="{Binding StopMediaCommand}">
+                    </Button>-->
+                </Grid>
+            </Grid>
+        </GroupBox>
         
         <GroupBox Grid.Row="2" Grid.Column="1"
                   Margin="5"

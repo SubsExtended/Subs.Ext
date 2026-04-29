@@ -39,7 +39,7 @@
             <TextBlock Grid.Row="1" Grid.Column="1"
                        Margin="5,0,0,0"
                        VerticalAlignment="Center">
-                    <Run Text="Rating: "/><Run Text="{Binding RatingCurrent}"/>
+                    <Run Text="Rating: "/><Run Text="{Binding RatingCurrent}" FontWeight="Bold"/>
             </TextBlock>
 
             <TextBlock Grid.Row="1" Grid.Column="2"

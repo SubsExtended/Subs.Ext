@@ -12,6 +12,7 @@ namespace Rating.WPF.Enums
     {
         Primary,
         Secondary,
+        Media,
     }
 
     public enum FileTypeEnum

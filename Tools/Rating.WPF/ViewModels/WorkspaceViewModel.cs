@@ -1,6 +1,7 @@
 ﻿// Subs.Ext\Tools\Rating.WPF\ViewModels\WorkspaceViewModel.cs
 
 using LibVLCSharp.Shared;
+using LibVLCSharp.Shared.Structures;
 using Microsoft.Win32;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -299,16 +300,68 @@ namespace Rating.WPF.ViewModels
             }
         }
 
-        private void PlayVideo(string videoPath)
+        private void OpenMediaFile()
         {
-            using var media = new Media(_libVLC, new Uri(videoPath));
-            MediaPlayer.Play(media);
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = "Video Files|*.mp4;*.avi;*.mkv;*.mov;*.wmv"
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                if (MediaPlayer != null)
+                {
+                    if (MediaPlayer.IsPlaying)
+                    {
+                        MediaPlayer.Stop();
+                    }
+
+                    MediaPlayer.Playing -= MediaPlayer_Playing;
+                    MediaPlayer.Media?.Dispose();
+                    MediaPlayer.Dispose();
+                }
+
+                using var media = new Media(_libVLC, new Uri(openFileDialog.FileName));
+
+                MediaPlayer = new MediaPlayer(media);
+                MediaPlayer.Playing += (sender, args) =>
+                {
+                    MediaFileAudioTracks = GetAudioTrackList();
+                };
+                MediaPlayer.SetSpu(-1);
+                MediaPlayer.Play();
+                MediaFilename = openFileDialog.FileName;
+            }
+        }
+
+        private List<TrackDescription> GetAudioTrackList()
+        {
+            // Accessing AudioTrackDescription returns a collection of TrackDescription objects
+            // Each object has an 'Id' (int) and a 'Name' (string)
+            return MediaPlayer?.AudioTrackDescription.ToList() ?? new List<TrackDescription>();
         }
 
         // Command to seek to a specific subtitle's time
-        public void SeekToSubtitle(TimeSpan time)
+        private void SeekToSubtitle(TimeSpan time)
         {
-            MediaPlayer.Time = (long)time.TotalMilliseconds;
+            if (MediaPlayer != null && MediaPlayer.Media != null)
+            {
+                MediaPlayer.Time = (long)time.TotalMilliseconds;
+            }
+        }
+
+        #endregion
+
+        #region Events
+
+        private void MediaPlayer_Playing(object sender, EventArgs e)
+        {
+            // Use Dispatcher.Invoke if you are updating UI from a background thread
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                MediaFileAudioTracks = GetAudioTrackList();
+
+            });
         }
 
         #endregion
@@ -336,6 +389,11 @@ namespace Rating.WPF.ViewModels
                 {
                     SyncSecondarySelections(value.Position);
                 }
+
+                if (value != null)
+                {
+                    SeekToSubtitle(value.TimeFrom);
+                }
             }
         }
 
@@ -353,13 +411,42 @@ namespace Rating.WPF.ViewModels
             set { SetProperty(ref mediaPlayer, value); }
         }
 
+        private string mediaFilename;
+        public string MediaFilename
+        {
+            get { return mediaFilename; }
+            set { SetProperty(ref mediaFilename, value); }
+        }
+
+        private List<TrackDescription> mediaFileAudioTracks;
+        public List<TrackDescription> MediaFileAudioTracks
+        {
+            get => mediaFileAudioTracks;
+            set => SetProperty(ref mediaFileAudioTracks, value);
+        }
+
+        private TrackDescription? mediaFileAudioTrackSelectedItem;
+        public TrackDescription? MediaFileAudioTrackSelectedItem
+        {
+            get { return mediaFileAudioTrackSelectedItem; }
+            set
+            {
+                SetProperty(ref mediaFileAudioTrackSelectedItem, value);
+
+                if (value != null && MediaPlayer != null)
+                {
+                    MediaPlayer.SetAudioTrack(value.Value.Id);
+                }
+            }
+        }
+
         #endregion
 
         #region Commands
 
-        private DelegateCommand<FileRankEnum?> openSubtitlesFile;
+        private DelegateCommand<FileRankEnum?> openSubtitlesFileCommand;
         public DelegateCommand<FileRankEnum?> OpenSubtitlesFileCommand =>
-            openSubtitlesFile ?? (openSubtitlesFile = new DelegateCommand<FileRankEnum?>(ExecuteOpenSubtitlesFileCommand));
+            openSubtitlesFileCommand ?? (openSubtitlesFileCommand = new DelegateCommand<FileRankEnum?>(ExecuteOpenSubtitlesFileCommand));
 
         async void ExecuteOpenSubtitlesFileCommand(FileRankEnum? parameter)
         {
@@ -369,9 +456,18 @@ namespace Rating.WPF.ViewModels
             }
         }
 
-        private DelegateCommand<FileOperationEnum?> fileOperation;
+        private DelegateCommand openMediaFileCommand;
+        public DelegateCommand OpenMediaFileCommand =>
+            openMediaFileCommand ?? (openMediaFileCommand = new DelegateCommand(ExecuteOpenMediaFileCommand));
+
+        void ExecuteOpenMediaFileCommand()
+        {
+            OpenMediaFile();
+        }
+
+        private DelegateCommand<FileOperationEnum?> fileOperationCommand;
         public DelegateCommand<FileOperationEnum?> FileOperationCommand =>
-            fileOperation ?? (fileOperation = new DelegateCommand<FileOperationEnum?>(ExecuteFileOperationCommand));
+            fileOperationCommand ?? (fileOperationCommand = new DelegateCommand<FileOperationEnum?>(ExecuteFileOperationCommand));
 
         async void ExecuteFileOperationCommand(FileOperationEnum? parameter)
         {
@@ -381,9 +477,9 @@ namespace Rating.WPF.ViewModels
             }
         }
 
-        private DelegateCommand<SubtitleModel?> promoteSubtitle;
+        private DelegateCommand<SubtitleModel?> promoteSubtitleCommand;
         public DelegateCommand<SubtitleModel?> PromoteSubtitleCommand =>
-            promoteSubtitle ?? (promoteSubtitle = new DelegateCommand<SubtitleModel?>(ExecutePromoteSubtitleCommand));
+            promoteSubtitleCommand ?? (promoteSubtitleCommand = new DelegateCommand<SubtitleModel?>(ExecutePromoteSubtitleCommand));
 
         private void ExecutePromoteSubtitleCommand(SubtitleModel parameter)
         {
@@ -412,9 +508,9 @@ namespace Rating.WPF.ViewModels
             ApplyRating(parameter, newRating);
         }
 
-        private DelegateCommand<SubtitleModel?> demoteSubtitle;
+        private DelegateCommand<SubtitleModel?> demoteSubtitleCommand;
         public DelegateCommand<SubtitleModel?> DemoteSubtitleCommand =>
-            demoteSubtitle ?? (demoteSubtitle = new DelegateCommand<SubtitleModel?>(ExecuteDemoteSubtitleCommand));
+            demoteSubtitleCommand ?? (demoteSubtitleCommand = new DelegateCommand<SubtitleModel?>(ExecuteDemoteSubtitleCommand));
 
         private void ExecuteDemoteSubtitleCommand(SubtitleModel parameter)
         {
@@ -427,9 +523,9 @@ namespace Rating.WPF.ViewModels
             ApplyRating(parameter, newRating);
         }
 
-        private DelegateCommand<SubtitleModel> removeRating;
+        private DelegateCommand<SubtitleModel> removeRatingCommand;
         public DelegateCommand<SubtitleModel> RemoveRatingCommand =>
-            removeRating ?? (removeRating = new DelegateCommand<SubtitleModel>(ExecuteRemoveRatingCommand));
+            removeRatingCommand ?? (removeRatingCommand = new DelegateCommand<SubtitleModel>(ExecuteRemoveRatingCommand));
 
         private void ExecuteRemoveRatingCommand(SubtitleModel parameter)
         {
@@ -450,6 +546,7 @@ namespace Rating.WPF.ViewModels
             MediaPlayer?.Dispose();
             _libVLC?.Dispose();
         }
+
         #endregion
     }
 }
