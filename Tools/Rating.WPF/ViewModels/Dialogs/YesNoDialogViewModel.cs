@@ -1,4 +1,6 @@
-﻿using Prism.Commands;
+﻿// Subs.Ext\Tools\Rating.WPF\ViewModels\Dialogs\YesNoDialogViewModel.cs
+
+using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
 using System;
