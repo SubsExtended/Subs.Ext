@@ -39,6 +39,11 @@ namespace Rating.WPF.ViewModels
             _syncService = syncService;
             _mediaService = mediaService;
 
+            _mediaService.AudioTracksUpdated += tracks =>
+            {
+                MediaFileAudioTracks = tracks;
+            };
+
             MediaPlayer = _mediaService.MediaPlayer;
         }
 
@@ -192,7 +197,7 @@ namespace Rating.WPF.ViewModels
                 _mediaService.OpenMediaFile();
                 MediaPlayer = _mediaService.MediaPlayer;
                 MediaFilename = _mediaService.MediaFilename;
-                MediaFileAudioTracks = _mediaService.AudioTracks;
+                //MediaFileAudioTracks = _mediaService.AudioTracks;
             });
         private DelegateCommand _openMedia;
 

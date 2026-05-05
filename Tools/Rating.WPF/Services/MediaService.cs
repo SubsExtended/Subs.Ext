@@ -10,6 +10,8 @@ namespace Rating.WPF.Services
 {
     public class MediaService : IMediaService
     {
+        public event Action<List<TrackDescription>>? AudioTracksUpdated;
+
         private readonly LibVLC _libVLC;
 
         public MediaPlayer MediaPlayer { get; private set; }
@@ -61,7 +63,9 @@ namespace Rating.WPF.Services
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    AudioTracks = MediaPlayer.AudioTrackDescription.ToList();
+                    var tracks = MediaPlayer.AudioTrackDescription.ToList();
+                    AudioTracks = tracks;
+                    AudioTracksUpdated?.Invoke(tracks);
                 });
             };
 

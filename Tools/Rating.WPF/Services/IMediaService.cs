@@ -7,6 +7,7 @@ namespace Rating.WPF.Services
 {
     public interface IMediaService : IDisposable
     {
+        event Action<List<TrackDescription>>? AudioTracksUpdated;
         MediaPlayer MediaPlayer { get; }
 
         string MediaFilename { get; }
