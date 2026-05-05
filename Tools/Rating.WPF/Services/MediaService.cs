@@ -4,6 +4,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 
 namespace Rating.WPF.Services
 {
@@ -25,9 +26,7 @@ namespace Rating.WPF.Services
             {
                 _selectedAudioTrack = value;
                 if (value != null)
-                {
-                    MediaPlayer?.SetAudioTrack(value.Value.Id);
-                }
+                    MediaPlayer.SetAudioTrack(value.Value.Id);
             }
         }
 
@@ -35,7 +34,6 @@ namespace Rating.WPF.Services
         {
             Core.Initialize();
             _libVLC = new LibVLC();
-            MediaPlayer = new MediaPlayer(_libVLC);
         }
 
         public void OpenMediaFile()
@@ -49,29 +47,24 @@ namespace Rating.WPF.Services
                 return;
 
             // Dispose previous player
-            if (MediaPlayer != null)
+            MediaPlayer?.Stop();
+            MediaPlayer?.Dispose();
+
+            // Create new Media object
+            var media = new Media(_libVLC, new Uri(dialog.FileName));
+
+            // Create new MediaPlayer EXACTLY like your old code
+            MediaPlayer = new MediaPlayer(media);
+
+            // Attach Playing event EXACTLY like your old code
+            MediaPlayer.Playing += (sender, args) =>
             {
-                if (MediaPlayer.IsPlaying)
-                    MediaPlayer.Stop();
-
-                MediaPlayer.Media?.Dispose();
-                MediaPlayer.Dispose();
-            }
-
-            using var media = new Media(_libVLC, new Uri(dialog.FileName));
-
-            media.ParsedChanged += (sender, args) =>
-            {
-                if (args.ParsedStatus == MediaParsedStatus.Done)
+                Application.Current.Dispatcher.Invoke(() =>
                 {
-                    App.Current.Dispatcher.Invoke(() =>
-                    {
-                        AudioTracks = MediaPlayer.AudioTrackDescription.ToList();
-                    });
-                }
+                    AudioTracks = MediaPlayer.AudioTrackDescription.ToList();
+                });
             };
 
-            MediaPlayer = new MediaPlayer(media);
             MediaPlayer.SetSpu(-1);
             MediaPlayer.Play();
 
@@ -81,17 +74,13 @@ namespace Rating.WPF.Services
         public void SeekTo(TimeSpan position)
         {
             if (MediaPlayer?.Media != null)
-            {
                 MediaPlayer.Time = (long)position.TotalMilliseconds;
-            }
         }
 
         public void SetMute(bool mute)
         {
             if (MediaPlayer?.Media != null)
-            {
                 MediaPlayer.Mute = mute;
-            }
         }
 
         public void SetPause(bool pause)
