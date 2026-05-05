@@ -32,6 +32,10 @@ namespace Rating.WPF
             // Register the view for navigation so RequestNavigate can use the view's name
             containerRegistry.RegisterForNavigation<WorkspaceView, ViewModels.WorkspaceViewModel>(nameof(WorkspaceView));
             containerRegistry.RegisterSingleton<IFileService, FileService>();
+            containerRegistry.RegisterSingleton<IMediaService, MediaService>();
+            containerRegistry.RegisterSingleton<IRatingService, RatingService>();
+            containerRegistry.RegisterSingleton<IFileOperationService, FileOperationService>();
+            containerRegistry.RegisterSingleton<ISubtitleSyncService, SubtitleSyncService>();
             containerRegistry.RegisterDialog<YesNoDialog, YesNoDialogViewModel>(nameof(YesNoDialog));
         }
 
