@@ -1,4 +1,6 @@
-﻿using Prism.Services.Dialogs;
+﻿// Subs.Ext\Tools\Rating.WPF\Services\IFileOperationService.cs
+
+using Prism.Services.Dialogs;
 using Rating.WPF.Enums;
 using Rating.WPF.Models;
 using System.Collections.ObjectModel;

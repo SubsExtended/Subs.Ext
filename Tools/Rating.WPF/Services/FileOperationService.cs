@@ -1,4 +1,6 @@
-﻿using Microsoft.Win32;
+﻿// Subs.Ext\Tools\Rating.WPF\Services\FileOperationService.cs
+
+using Microsoft.Win32;
 using Prism.Services.Dialogs;
 using Rating.WPF.Dialogs;
 using Rating.WPF.Enums;

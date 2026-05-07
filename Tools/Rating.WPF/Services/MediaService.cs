@@ -1,4 +1,6 @@
-﻿using LibVLCSharp.Shared;
+﻿// Subs.Ext\Tools\Rating.WPF\Services\MediaService.cs
+
+using LibVLCSharp.Shared;
 using LibVLCSharp.Shared.Structures;
 using Microsoft.Win32;
 using System;

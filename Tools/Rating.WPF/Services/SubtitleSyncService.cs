@@ -1,4 +1,6 @@
-﻿using Rating.WPF.Models;
+﻿// Subs.Ext\Tools\Rating.WPF\Services\SubtitleSyncService.cs
+
+using Rating.WPF.Models;
 using System.Collections.Generic;
 using System.Linq;
 

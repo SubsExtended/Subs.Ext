@@ -1,87 +1,162 @@
--- language_level.lua
--- Put this in %APPDATA%\vlc\lua\extensions\
-
-local selected_level = 3 -- Default: 1=A, 2=B, 3=C, 4=D, 5=E
-local subs = {}
+-- MyLanguageLevel.lua
+-- VLC Lua extension for filtering subtitles by {DIFF:X} tags
 
 function descriptor()
     return {
         title = "My Language Level",
-        version = "1.1",
-        capabilities = { "menu", "input-listener" }
+        version = "1.0",
+        author = "Alexey",
+        description = "Filter subtitles by difficulty tags {DIFF:X}",
+        shortdesc = "Language Level Filter",
+        capabilities = {}
     }
 end
 
-function menu()
-    return { "Level A", "Level B", "Level C (Default)", "Level D", "Level E", "---", "Scan for Subtitles" }
+local dlg = nil
+local current_level = "C"
+
+local levels = { "A", "B", "C", "D", "E" }
+
+function activate()
+    show_dialog()
 end
 
-function trigger_menu(id)
-    if id <= 5 then
-        selected_level = id
-        vlc.osd.message("Filter: Show up to Level " .. string.char(64 + selected_level), 0, "bottom", 2000000)
-    elseif id == 7 then
-        load_srt_file()
+function deactivate()
+    if dlg then dlg:delete() end
+end
+
+function close()
+    deactivate()
+end
+
+function show_dialog()
+    dlg = vlc.dialog("My Language Level")
+
+    dlg:add_label("Select your level:", 1, 1, 1, 1)
+
+    local col = 1
+    for _, lvl in ipairs(levels) do
+        dlg:add_button(lvl, function() set_level(lvl) end, col, 2, 1, 1)
+        col = col + 1
     end
+
+    dlg:add_button("Apply to current subtitles", apply_filter, 1, 3, 3, 1)
 end
 
--- Converts "00:00:20,000" to milliseconds
-function parse_time(time_str)
-    local h, m, s, ms = string.match(time_str, "(%d+):(%d+):(%d+),(%d+)")
-    return (h*3600000) + (m*60000) + (s*1000) + ms
+function set_level(lvl)
+    current_level = lvl
+    vlc.msg.info("MyLanguageLevel: level set to " .. lvl)
 end
 
-function load_srt_file()
-    subs = {} -- Clear old data
+-- Difficulty mapping
+local function allowed_levels_for(level)
+    if level == "A" then return { "A" }
+    elseif level == "B" then return { "A", "B" }
+    elseif level == "C" then return { "A", "B" }
+    elseif level == "D" then return { "A", "B", "C" }
+    elseif level == "E" then return { "A", "B", "C", "D" }
+    end
+    return { "A" }
+end
+
+local function has_allowed_diff(line, allowed)
+    for _, lvl in ipairs(allowed) do
+        if string.find(line, "{DIFF:" .. lvl .. "}", 1, true) then
+            return true
+        end
+    end
+    return false
+end
+
+local function strip_diff_tags(line)
+    return string.gsub(line, "{DIFF:[ABCDE]}", "")
+end
+
+function apply_filter()
     local item = vlc.input.item()
-    if not item then return end
-
-    -- Get video path and swap extension to .srt
-    local uri = item:uri()
-    local srt_path = string.gsub(uri, "^file:///", "") -- Windows path cleanup
-    srt_path = string.gsub(srt_path, "%%20", " ")      -- Handle spaces
-    srt_path = string.gsub(srt_path, "%.[^%.]+$", ".srt")
-
-    local file = io.open(srt_path, "r")
-    if not file then 
-        vlc.osd.message("No matching .srt file found!", 0, "bottom", 3000000)
-        return 
+    if not item then
+        vlc.msg.err("MyLanguageLevel: no input item")
+        return
     end
 
-    local current_sub = {}
-    for line in file:lines() do
-        -- 1. Look for timecode line
-        local start_t, end_t = string.match(line, "(%d+:%d+:%d+,%d+) %-%-> (%d+:%d+:%d+,%d+)")
-        if start_t then
-            current_sub.start = parse_time(start_t)
-            current_sub.stop = parse_time(end_t)
-            current_sub.text = ""
-        -- 2. Look for rating tag {DIFF:X}
-        elseif string.match(line, "{DIFF:([A-E])}") then
-            local grade = string.match(line, "{DIFF:([A-E])}")
-            current_sub.rating = string.byte(grade) - 64 -- A=1, B=2, etc.
-            current_sub.text = string.gsub(line, "{DIFF:[A-E]}", "") -- Clean tag for display
-            table.insert(subs, current_sub)
-            current_sub = {}
+    -- Try to detect subtitle file
+    local metas = item:metas()
+    local subfile = metas["subfile"] or metas["Subtitles"]
+
+    if not subfile then
+        vlc.msg.err("MyLanguageLevel: no subtitle file detected")
+        return
+    end
+
+    vlc.msg.info("MyLanguageLevel: using subtitle file " .. subfile)
+
+    local allowed = allowed_levels_for(current_level)
+
+    -- Read original SRT
+    local f = io.open(subfile, "r")
+    if not f then
+        vlc.msg.err("MyLanguageLevel: cannot open subtitle file")
+        return
+    end
+    local content = f:read("*all")
+    f:close()
+
+    -- Parse SRT blocks
+    local blocks = {}
+    local current = {}
+
+    for line in string.gmatch(content, "([^\r\n]*)\r?\n") do
+        if line == "" and #current > 0 then
+            table.insert(blocks, current)
+            current = {}
+        else
+            table.insert(current, line)
         end
     end
-    file:close()
-    vlc.osd.message("Loaded " .. #subs .. " rated subtitles.", 0, "bottom", 3000000)
-end
+    if #current > 0 then table.insert(blocks, current) end
 
--- Runs continuously during playback
-function input_changed()
-    local input = vlc.object.input()
-    if not input then return end
-    
-    local curr_ms = vlc.var.get(input, "time") / 1000 -- micro to milli
-    for _, sub in ipairs(subs) do
-        if curr_ms >= sub.start and curr_ms <= sub.stop then
-            -- ONLY display if the rating is EQUAL OR HARDER than selected
-            if sub.rating <= selected_level then
-                vlc.osd.message(sub.text, 0, "bottom", 500000)
+    -- Filter blocks
+    local filtered = {}
+    for _, block in ipairs(blocks) do
+        local keep = false
+        for i = 3, #block do
+            if has_allowed_diff(block[i], allowed) then
+                keep = true
+                break
             end
-            break
+        end
+
+        if keep then
+            local new_block = {}
+            for i, line in ipairs(block) do
+                if i >= 3 then
+                    line = strip_diff_tags(line)
+                end
+                table.insert(new_block, line)
+            end
+            table.insert(filtered, new_block)
         end
     end
+
+    -- Rebuild SRT
+    local out_lines = {}
+    local idx = 1
+    for _, block in ipairs(filtered) do
+        table.insert(out_lines, tostring(idx))
+        table.insert(out_lines, block[2])
+        for i = 3, #block do
+            table.insert(out_lines, block[i])
+        end
+        table.insert(out_lines, "")
+        idx = idx + 1
+    end
+
+    -- Write temp file
+    local tmp = os.tmpname() .. ".srt"
+    local out = io.open(tmp, "w")
+    out:write(table.concat(out_lines, "\n"))
+    out:close()
+
+    vlc.msg.info("MyLanguageLevel: loading filtered subtitles " .. tmp)
+    vlc.input.add_subtitle(tmp, true)
 end
