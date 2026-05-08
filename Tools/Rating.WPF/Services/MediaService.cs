@@ -29,8 +29,8 @@ namespace Rating.WPF.Services
             set
             {
                 _selectedAudioTrack = value;
-                if (value != null)
-                    MediaPlayer.SetAudioTrack(value.Value.Id);
+
+                if (value != null) MediaPlayer.SetAudioTrack(value.Value.Id);
             }
         }
 
@@ -47,20 +47,15 @@ namespace Rating.WPF.Services
                 Filter = "Video/audio Files|*.mp4;*.avi;*.mkv;*.mov;*.wmv;*.mp3;*.wav;*.flac"
             };
 
-            if (dialog.ShowDialog() != true)
-                return;
+            if (dialog.ShowDialog() != true) return;
 
-            // Dispose previous player
             MediaPlayer?.Stop();
             MediaPlayer?.Dispose();
 
-            // Create new Media object
             var media = new Media(_libVLC, new Uri(dialog.FileName));
 
-            // Create new MediaPlayer EXACTLY like your old code
             MediaPlayer = new MediaPlayer(media);
 
-            // Attach Playing event EXACTLY like your old code
             MediaPlayer.Playing += (sender, args) =>
             {
                 Application.Current.Dispatcher.Invoke(() =>
@@ -79,14 +74,12 @@ namespace Rating.WPF.Services
 
         public void SeekTo(TimeSpan position)
         {
-            if (MediaPlayer?.Media != null)
-                MediaPlayer.Time = (long)position.TotalMilliseconds;
+            if (MediaPlayer?.Media != null) MediaPlayer.Time = (long)position.TotalMilliseconds;
         }
 
         public void SetMute(bool mute)
         {
-            if (MediaPlayer?.Media != null)
-                MediaPlayer.Mute = mute;
+            if (MediaPlayer?.Media != null) MediaPlayer.Mute = mute;
         }
 
         public void SetPause(bool pause)
@@ -94,9 +87,13 @@ namespace Rating.WPF.Services
             if (MediaPlayer?.Media != null)
             {
                 if (pause)
+                {
                     MediaPlayer.Pause();
+                }
                 else
+                {
                     MediaPlayer.Play();
+                }
             }
         }
 

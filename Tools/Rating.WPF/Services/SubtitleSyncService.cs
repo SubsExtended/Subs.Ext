@@ -10,13 +10,11 @@ namespace Rating.WPF.Services
     {
         public void SyncSecondarySelections(IEnumerable<FileModel> secondaryFiles, int position)
         {
-            if (secondaryFiles == null)
-                return;
+            if (secondaryFiles == null) return;
 
             foreach (var file in secondaryFiles)
             {
-                var match = file.SubtitleCollection
-                    .FirstOrDefault(s => s.Position == position);
+                var match = file.SubtitleCollection.FirstOrDefault(s => s.Position == position);
 
                 file.SubtitleSelectedItem = match;
             }

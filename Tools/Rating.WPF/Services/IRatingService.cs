@@ -1,4 +1,4 @@
-﻿Subs.Ext\Tools\Rating.WPF\Services\IRatingService.cs
+﻿// Subs.Ext\Tools\Rating.WPF\Services\IRatingService.cs
 
 using Rating.WPF.Enums;
 using Rating.WPF.Models;

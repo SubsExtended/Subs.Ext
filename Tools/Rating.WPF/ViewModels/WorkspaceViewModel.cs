@@ -58,8 +58,7 @@ namespace Rating.WPF.ViewModels
                 Filter = "SRT files (*.srt)|*.srt"
             };
 
-            if (dialog.ShowDialog() != true)
-                return;
+            if (dialog.ShowDialog() != true) return;
 
             var fileModel = await _fileService.ReadFileAsync(dialog.FileName);
             fileModel.FileRank = fileRank;
@@ -67,8 +66,7 @@ namespace Rating.WPF.ViewModels
             if (fileRank == FileRankEnum.Primary)
             {
                 var existing = FilesCollection.FirstOrDefault(f => f.FileRank == FileRankEnum.Primary);
-                if (existing != null)
-                    FilesCollection.Remove(existing);
+                if (existing != null) FilesCollection.Remove(existing);
             }
 
             FilesCollection.Add(fileModel);
@@ -90,11 +88,8 @@ namespace Rating.WPF.ViewModels
         // PROPERTIES
         // ---------------------------------------------------------
 
-        public FileModel PrimaryFile =>
-            FilesCollection.FirstOrDefault(f => f.FileRank == FileRankEnum.Primary);
-
-        public IEnumerable<FileModel> SecondaryFiles =>
-            FilesCollection.Where(f => f.FileRank == FileRankEnum.Secondary);
+        public FileModel PrimaryFile => FilesCollection.FirstOrDefault(f => f.FileRank == FileRankEnum.Primary);
+        public IEnumerable<FileModel> SecondaryFiles => FilesCollection.Where(f => f.FileRank == FileRankEnum.Secondary);
 
         private ObservableCollection<FileModel> _filesCollection = new();
         public ObservableCollection<FileModel> FilesCollection

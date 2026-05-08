@@ -11,15 +11,12 @@ namespace Rating.WPF.Services
     {
         public void ApplyRating(ObservableCollection<FileModel> files, SubtitleModel subtitle, SubtitleRatingEnum? newRating)
         {
-            if (subtitle == null)
-                return;
+            if (subtitle == null) return;
 
             // Find the file that owns this subtitle
-            var fileWithSubtitle = files.FirstOrDefault(f =>
-                f.SubtitleCollection.Any(s => s.PK == subtitle.PK));
+            var fileWithSubtitle = files.FirstOrDefault(f => f.SubtitleCollection.Any(s => s.PK == subtitle.PK));
 
-            if (fileWithSubtitle == null)
-                return;
+            if (fileWithSubtitle == null) return;
 
             // Always update the clicked subtitle
             subtitle.RatingCurrent = newRating;
@@ -29,26 +26,24 @@ namespace Rating.WPF.Services
             {
                 foreach (var file in files)
                 {
-                    if (file == fileWithSubtitle)
-                        continue;
+                    if (file == fileWithSubtitle) continue;
 
-                    var sub = file.SubtitleCollection
-                        .FirstOrDefault(s => s.Position == subtitle.Position);
+                    var sub = file.SubtitleCollection.FirstOrDefault(s => s.Position == subtitle.Position);
 
-                    if (sub != null)
-                        sub.RatingCurrent = newRating;
+                    if (sub != null) sub.RatingCurrent = newRating;
                 }
             }
 
             // Update dirty flags
             foreach (var file in files)
+            {
                 file.SetIsDirty();
+            }
         }
 
         public void Promote(ObservableCollection<FileModel> files, SubtitleModel subtitle)
         {
-            if (subtitle == null)
-                return;
+            if (subtitle == null) return;
 
             SubtitleRatingEnum? newRating;
 
@@ -70,14 +65,9 @@ namespace Rating.WPF.Services
 
         public void Demote(ObservableCollection<FileModel> files, SubtitleModel subtitle)
         {
-            if (subtitle == null)
-                return;
-
-            if (subtitle.RatingCurrent == null || subtitle.RatingCurrent == SubtitleRatingEnum.None)
-                return;
-
-            if (subtitle.RatingCurrent == SubtitleRatingEnum.E)
-                return;
+            if (subtitle == null) return;
+            if (subtitle.RatingCurrent == null || subtitle.RatingCurrent == SubtitleRatingEnum.None) return;
+            if (subtitle.RatingCurrent == SubtitleRatingEnum.E) return;
 
             var newRating = (SubtitleRatingEnum)((int)subtitle.RatingCurrent + 1);
 
@@ -86,8 +76,7 @@ namespace Rating.WPF.Services
 
         public void Remove(ObservableCollection<FileModel> files, SubtitleModel subtitle)
         {
-            if (subtitle == null)
-                return;
+            if (subtitle == null) return;
 
             ApplyRating(files, subtitle, null);
         }
