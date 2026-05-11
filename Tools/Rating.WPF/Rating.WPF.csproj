@@ -13,4 +13,9 @@
   <ItemGroup>
     <Folder Include="Converters\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

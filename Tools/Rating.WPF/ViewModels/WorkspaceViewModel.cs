@@ -7,6 +7,7 @@ using Prism.Services.Dialogs;
 using Rating.WPF.Enums;
 using Rating.WPF.Models;
 using Rating.WPF.Services;
+using Rating.WPF.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -185,6 +186,13 @@ namespace Rating.WPF.ViewModels
                     await OpenSubtitlesFile(p.Value);
             });
         private DelegateCommand<FileRankEnum?> _openSubs;
+
+        public DelegateCommand OpenSettingsCommand =>
+            _openSettings ??= new DelegateCommand(() =>
+            {
+                _dialogService.ShowDialog(nameof(SettingsDialog), null, null);
+            });
+        private DelegateCommand _openSettings;
 
         public DelegateCommand OpenMediaFileCommand =>
             _openMedia ??= new DelegateCommand(() =>
