@@ -118,6 +118,18 @@ namespace Rating.WPF.ViewModels
             set => SetProperty(ref _secondarySelected, value);
         }
 
+        public Array LanguageLevelArray
+        {
+            get { return Enum.GetValues(typeof(LanguageLevelEnum)); }
+        }
+
+        private LanguageLevelEnum _languageLevelSelectedItem;
+        public LanguageLevelEnum LanguageLevelSelectedItem
+        {
+            get { return _languageLevelSelectedItem; }
+            set { SetProperty(ref _languageLevelSelectedItem, value); }
+        }
+
         // MEDIA PROPERTIES (bound to MediaService)
         public MediaPlayer MediaPlayer
         {

@@ -149,7 +149,7 @@ namespace Rating.WPF.Services
             if (string.IsNullOrWhiteSpace(filePath))
             {
                 string tempFolder = Path.GetTempPath();
-                string tempFile = Path.Combine(tempFolder, $"{Guid.NewGuid()}.srt");
+                string tempFile = Path.Combine(tempFolder, $"{Guid.NewGuid()}.subs.ext.srt");
                 filePath = tempFile;
             }
 
