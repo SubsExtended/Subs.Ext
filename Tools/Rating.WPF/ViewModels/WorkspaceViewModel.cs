@@ -44,8 +44,6 @@ namespace Rating.WPF.ViewModels
             {
                 MediaFileAudioTracks = tracks;
             };
-
-            MediaPlayer = _mediaService.MediaPlayer;
         }
 
         // ---------------------------------------------------------
@@ -223,7 +221,11 @@ namespace Rating.WPF.ViewModels
                         PrimaryFile,
                         SecondaryFilesSelectedItem,
                         _fileService,
-                        _dialogService);
+                        _dialogService).ContinueWith(t =>
+                        {
+                            RaisePropertyChanged(nameof(SecondaryFilesSelectedItem));
+                            RaisePropertyChanged(nameof(SecondaryFiles));
+                        });
                 }
             });
         private DelegateCommand<FileOperationEnum?> _fileOpsCmd;

@@ -12,6 +12,6 @@ namespace Rating.WPF.Services
     {
         // Changed directoryPath to filePath to match logic
         Task<FileModel> ReadFileAsync(string filePath, CancellationToken ct = default, IProgress<double> progress = null);
-        Task WriteFileAsync(FileModel fileModel, string filePath, CancellationToken ct = default);
+        Task<string> WriteFileAsync(FileModel fileModel, string filePath, CancellationToken ct = default);
     }
 }

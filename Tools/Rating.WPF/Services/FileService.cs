@@ -143,8 +143,16 @@ namespace Rating.WPF.Services
             return TimeSpan.Zero; // Or handle error
         }
 
-        public async Task WriteFileAsync(FileModel fileModel, string filePath, CancellationToken ct = default)
+        public async Task<string> WriteFileAsync(FileModel fileModel, string filePath, CancellationToken ct = default)
         {
+            // If no filePath provided → create a temp SRT file
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                string tempFolder = Path.GetTempPath();
+                string tempFile = Path.Combine(tempFolder, $"{Guid.NewGuid()}.srt");
+                filePath = tempFile;
+            }
+
             // Define the SRT-compliant newline (CRLF)
             const string srtNewLine = "\r\n";
 
@@ -174,8 +182,9 @@ namespace Rating.WPF.Services
                 await writer.WriteAsync(srtNewLine);
             }
 
-            // Ensure everything is flushed to disk
             await writer.FlushAsync();
+
+            return filePath;
         }
     }
 }
