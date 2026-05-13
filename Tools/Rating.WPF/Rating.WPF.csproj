@@ -1,9 +1,17 @@
 ﻿<!-- Subs.Ext\Tools\Rating.WPF\Rating.WPF.csproj -->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <UseWPF>true</UseWPF>
+	  <OutputType>WinExe</OutputType>
+	  <TargetFramework>net6.0-windows</TargetFramework>
+	  <UseWPF>true</UseWPF>
+	  <AssemblyName>RatedSubs</AssemblyName>
+	  <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+	  <AssemblyVersion>0.1.0.0</AssemblyVersion>
+	  <FileVersion>0.1.0.0</FileVersion>
+	  <InformationalVersion>0.1.a</InformationalVersion>
+	  <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+	  <Deterministic>false</Deterministic>
+	  <ContinuousIntegrationBuild>false</ContinuousIntegrationBuild>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="LibVLCSharp.WPF" Version="3.9.7.1" />
