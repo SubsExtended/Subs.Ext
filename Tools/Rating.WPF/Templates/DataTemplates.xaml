@@ -186,7 +186,7 @@
                        Width="5"
                        Fill="Red"
                        ToolTip="File has changes"
-                       Visibility="{Binding IsDirty, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+                       Visibility="{Binding IsDirty, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed, TargetNullValue=Collapsed}">
             </Rectangle>
 
             <Grid Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
