@@ -319,6 +319,13 @@ namespace Rating.WPF.ViewModels
             });
         private DelegateCommand _openSettings;
 
+        public DelegateCommand OpenHelpCommand =>
+            _openHelp ??= new DelegateCommand(() =>
+            {
+                _dialogService.ShowDialog(nameof(HelpDialog), null, null);
+            });
+        private DelegateCommand _openHelp;
+
         public DelegateCommand OpenMediaFileCommand =>
             _openMedia ??= new DelegateCommand(() =>
             {

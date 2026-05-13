@@ -1,0 +1,66 @@
+﻿<!-- Subs.Ext\Tools\Rating.WPF\Dialogs\HelpDialog.xaml -->
+<UserControl x:Class="Rating.WPF.Dialogs.HelpDialog"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:prism="http://prismlibrary.com/"
+             prism:ViewModelLocator.AutoWireViewModel="True"
+             Width="400" Height="300"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0"
+                   Margin="20,5"
+                   VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                   TextWrapping="Wrap"
+                   Text="Author:">
+        </TextBlock>
+
+        <TextBlock Grid.Row="1" Grid.Column="0"
+                   Margin="20,0">
+                   <Hyperlink NavigateUri="mailto:someone@example.com"
+                              RequestNavigate="HyperlinkEmail_RequestNavigate">
+                       subs.ext@outlook.com
+                   </Hyperlink>
+        </TextBlock>
+
+        <TextBlock Grid.Row="2" Grid.Column="0"
+                   Margin="20,5"
+                   VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                   TextWrapping="Wrap"
+                   Text="GitHub Repo:">
+        </TextBlock>
+
+        <TextBlock Grid.Row="3" Grid.Column="0"
+                   Margin="20,0">
+                   <Hyperlink NavigateUri="https://github.com/SubsExtended/Subs.Ext"
+                              RequestNavigate="HyperlinkGitHub_RequestNavigate">
+                       https://github.com/SubsExtended/Subs.Ext
+                   </Hyperlink>
+        </TextBlock>
+
+        <Button Grid.Row="5" Grid.Column="0"
+                Margin="5"
+                Content="OK"
+                Width="75" Height="25"
+                HorizontalAlignment="Center"
+                IsDefault="True"
+                CommandParameter="OK"
+                Command="{Binding CloseDialogCommand}">
+        </Button>
+
+    </Grid>
+</UserControl>

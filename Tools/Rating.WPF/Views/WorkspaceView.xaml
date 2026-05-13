@@ -74,6 +74,12 @@
                       ItemsSource="{Binding LanguageLevelArray}"
                       SelectedItem="{Binding LanguageLevelSelectedItem, Mode=TwoWay}">
             </ComboBox>
+            <Button Margin="30,5,5,5"
+                    Padding="10,5"
+                    FontWeight="Black"
+                    Content="&#65311;"
+                    Command="{Binding OpenHelpCommand}">
+            </Button>
         </StackPanel>
 
         <GroupBox Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"
