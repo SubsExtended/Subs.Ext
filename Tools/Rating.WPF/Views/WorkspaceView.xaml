@@ -243,7 +243,7 @@
         <GroupBox Grid.Row="2" Grid.Column="1"
                   Margin="5"
                   VerticalAlignment="Stretch"
-                  Header="Secondary Files">
+                  Header="Secondary Files (optional)">
 
             <Grid>
                 <Grid.RowDefinitions>

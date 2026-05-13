@@ -35,9 +35,13 @@ namespace Rating.WPF.Enums
     public enum LanguageEnum
     {
         English,
+        Russian,
         Spanish,
         French,
-        Russian,
+        Italian,
+        German,
+        Chinese,
+        Japanese,
     }
 
     public enum MyLanguageLevelEnum
