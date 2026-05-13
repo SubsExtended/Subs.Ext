@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿// Subs.Ext\Tools\Rating.WPF\Services\SettingsService.cs
+
+using System.IO;
 using System.Text.Json;
 using Rating.WPF.Models;
 

@@ -5,7 +5,6 @@ using Prism.Services.Dialogs;
 using Rating.WPF.Dialogs;
 using Rating.WPF.Enums;
 using Rating.WPF.Models;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;

@@ -1,9 +1,7 @@
 ﻿// Subs.Ext\Tools\Rating.WPF\Models\SubtitleModel.cs
 
 using System;
-
 using Prism.Mvvm;
-
 using Rating.WPF.Enums;
 
 namespace Rating.WPF.Models

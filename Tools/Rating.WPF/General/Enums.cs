@@ -1,11 +1,5 @@
 ﻿// Subs.Ext\Tools\Rating.WPF\General\Enums.cs
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Rating.WPF.Enums
 {
     public enum FileRankEnum

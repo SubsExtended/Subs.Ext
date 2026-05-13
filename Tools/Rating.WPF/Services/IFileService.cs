@@ -3,7 +3,6 @@
 using Rating.WPF.Enums;
 using Rating.WPF.Models;
 using System;
-using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 
