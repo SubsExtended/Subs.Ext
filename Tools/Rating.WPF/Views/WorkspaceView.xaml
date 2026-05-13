@@ -19,7 +19,7 @@
                                 ObjectType="{x:Type System:Enum}">
             <ObjectDataProvider.MethodParameters>
                 <x:Type TypeName="enum:FileOperationEnum" />
-                <x:Type TypeName="enum:LanguageLevelEnum" />
+                <x:Type TypeName="enum:MyLanguageLevelEnum" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
     </UserControl.Resources>

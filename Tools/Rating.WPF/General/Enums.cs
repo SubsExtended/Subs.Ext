@@ -40,7 +40,7 @@ namespace Rating.WPF.Enums
         Russian,
     }
 
-    public enum LanguageLevelEnum
+    public enum MyLanguageLevelEnum
     {
         A = 1,
         B = 2,

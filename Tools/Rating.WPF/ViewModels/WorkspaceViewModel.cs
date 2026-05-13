@@ -4,13 +4,14 @@ using LibVLCSharp.Shared;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
+using Rating.WPF.Dialogs;
 using Rating.WPF.Enums;
 using Rating.WPF.Models;
 using Rating.WPF.Services;
-using Rating.WPF.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -24,6 +25,7 @@ namespace Rating.WPF.ViewModels
         private readonly IFileOperationService _fileOps;
         private readonly ISubtitleSyncService _syncService;
         private readonly IMediaService _mediaService;
+        private readonly ISettingsService _settingsService;
 
         public WorkspaceViewModel(
             IFileService fileService,
@@ -31,7 +33,8 @@ namespace Rating.WPF.ViewModels
             IRatingService ratingService,
             IFileOperationService fileOps,
             ISubtitleSyncService syncService,
-            IMediaService mediaService)
+            IMediaService mediaService,
+            ISettingsService settingsService)
         {
             _fileService = fileService;
             _dialogService = dialogService;
@@ -39,11 +42,115 @@ namespace Rating.WPF.ViewModels
             _fileOps = fileOps;
             _syncService = syncService;
             _mediaService = mediaService;
+            _settingsService = settingsService;
 
             _mediaService.AudioTracksUpdated += tracks =>
             {
                 MediaFileAudioTracks = tracks;
             };
+        }
+
+        private void RunMediaPlayer(FileRankEnum fileRank)
+        {
+            // --- VALIDATION ---------------------------------------------------------
+
+            string validationError =
+                string.IsNullOrEmpty(MediaFilename) ? "Please select a media file." :
+                LanguageLevelSelectedItem == null ? "Please select your language level." :
+                (fileRank == FileRankEnum.Primary && PrimaryFile == null) ? "Please select a primary subtitles file." :
+                (fileRank == FileRankEnum.Secondary && SecondaryFilesSelectedItem == null) ? "Please select a secondary subtitles file." :
+                null;
+
+            if (validationError != null)
+            {
+                _dialogService.ShowDialog(nameof(NotificationDialog),
+                    new DialogParameters { { "message", validationError } }, null);
+                return;
+            }
+
+            // --- SELECT FILE MODEL --------------------------------------------------
+
+            FileModel fileModel = fileRank == FileRankEnum.Primary
+                ? PrimaryFile
+                : SecondaryFilesSelectedItem;
+
+            // --- COUNT RELEVANT SUBTITLES ------------------------------------------
+
+            int relevantSubCount = fileModel.SubtitleCollection.Count(sub =>
+                sub.RatingCurrent.HasValue &&
+                (int)sub.RatingCurrent.Value < (int)LanguageLevelSelectedItem.Value);
+
+            // --- PREPARE DIALOG PARAMETERS -----------------------------------------
+
+            var parameters = new DialogParameters
+    {
+        { "fileRank", fileRank },
+        { "mediaPath", MediaFilename },
+        { "subtitlePath", fileModel.FilePath },
+        { "myLanguageLevel", LanguageLevelSelectedItem.ToString() },
+        { "relevantSubCount", relevantSubCount }
+    };
+
+            // --- SHOW DIALOG --------------------------------------------------------
+
+            _dialogService.ShowDialog(nameof(RunMediaPlayerDialog), parameters, async dialogResult =>
+            {
+                if (dialogResult.Result != ButtonResult.OK)
+                    return;
+
+                if (!dialogResult.Parameters.ContainsKey("tempFileName"))
+                    return;
+
+                string tempFileName = dialogResult.Parameters.GetValue<string>("tempFileName");
+
+                // Determine which file model to filter
+                FileModel fileModel = fileRank == FileRankEnum.Primary
+                    ? PrimaryFile
+                    : SecondaryFilesSelectedItem;
+
+                try
+                {
+                    // 1. Write filtered subtitles into the temp file
+                    int writtenCount = await _fileService.WriteTmpFileAsync(
+                        fileModel,
+                        tempFileName,
+                        LanguageLevelSelectedItem.Value);
+
+                    if (writtenCount == 0)
+                    {
+                        _dialogService.ShowDialog(nameof(NotificationDialog),
+                            new DialogParameters { { "message", "No subtitles match your selected difficulty level." } },
+                            null);
+                        return;
+                    }
+
+                    // 2. Launch standalone VLC with media + filtered subs
+                    Task.Run(() =>
+                    {
+                        try
+                        {
+                            Process.Start(new ProcessStartInfo
+                            {
+                                FileName = _settingsService.Settings.VlcPath,   // path to VLC.exe
+                                Arguments = $"\"{MediaFilename}\" --sub-file=\"{tempFileName}\"",
+                                UseShellExecute = false
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            _dialogService.ShowDialog(nameof(NotificationDialog),
+                                new DialogParameters { { "message", $"Failed to launch VLC: {ex.Message}" } },
+                                null);
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    _dialogService.ShowDialog(nameof(NotificationDialog),
+                        new DialogParameters { { "message", $"Error creating temporary subtitle file: {ex.Message}" } },
+                        null);
+                }
+            });
         }
 
         // ---------------------------------------------------------
@@ -120,11 +227,11 @@ namespace Rating.WPF.ViewModels
 
         public Array LanguageLevelArray
         {
-            get { return Enum.GetValues(typeof(LanguageLevelEnum)); }
+            get { return Enum.GetValues(typeof(MyLanguageLevelEnum)); }
         }
 
-        private LanguageLevelEnum _languageLevelSelectedItem;
-        public LanguageLevelEnum LanguageLevelSelectedItem
+        private MyLanguageLevelEnum? _languageLevelSelectedItem;
+        public MyLanguageLevelEnum? LanguageLevelSelectedItem
         {
             get { return _languageLevelSelectedItem; }
             set { SetProperty(ref _languageLevelSelectedItem, value); }
@@ -188,6 +295,14 @@ namespace Rating.WPF.ViewModels
         // ---------------------------------------------------------
         // COMMANDS
         // ---------------------------------------------------------
+
+        public DelegateCommand<FileRankEnum?> RunMediaPlayerCommand =>
+            _runMediaPlayer ??= new DelegateCommand<FileRankEnum?>(async p =>
+            {
+                if (!p.HasValue) return;
+                RunMediaPlayer(p.Value);
+            });
+        private DelegateCommand<FileRankEnum?> _runMediaPlayer;
 
         public DelegateCommand<FileRankEnum?> OpenSubtitlesFileCommand =>
             _openSubs ??= new DelegateCommand<FileRankEnum?>(async p =>

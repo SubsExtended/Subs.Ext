@@ -35,10 +35,12 @@ namespace Rating.WPF
             containerRegistry.RegisterSingleton<IMediaService, MediaService>();
             containerRegistry.RegisterSingleton<IRatingService, RatingService>();
             containerRegistry.RegisterSingleton<IFileOperationService, FileOperationService>();
-            containerRegistry.RegisterSingleton<SettingsService>();
+            containerRegistry.RegisterSingleton<ISettingsService, SettingsService>();
             containerRegistry.RegisterSingleton<ISubtitleSyncService, SubtitleSyncService>();
+            containerRegistry.RegisterDialog<NotificationDialog, NotificationDialogViewModel>(nameof(NotificationDialog));
             containerRegistry.RegisterDialog<YesNoDialog, YesNoDialogViewModel>(nameof(YesNoDialog));
             containerRegistry.RegisterDialog<SettingsDialog, SettingsDialogViewModel>(nameof(SettingsDialog));
+            containerRegistry.RegisterDialog<RunMediaPlayerDialog, RunMediaPlayerDialogViewModel>(nameof(RunMediaPlayerDialog));
         }
 
         protected override void OnInitialized()

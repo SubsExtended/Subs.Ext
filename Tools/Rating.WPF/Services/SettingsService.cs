@@ -4,7 +4,7 @@ using Rating.WPF.Models;
 
 namespace Rating.WPF.Services
 {
-    public class SettingsService
+    public class SettingsService : ISettingsService
     {
         private const string FileName = "settings.json";
 

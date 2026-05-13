@@ -186,5 +186,60 @@ namespace Rating.WPF.Services
 
             return filePath;
         }
+
+        public async Task<int> WriteTmpFileAsync(
+            FileModel fileModel,
+            string filePath,
+            MyLanguageLevelEnum languageLevel,
+            CancellationToken ct = default)
+        {
+            // If no filePath provided → create a temp SRT file
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                string tempFolder = Path.GetTempPath();
+                filePath = Path.Combine(tempFolder, $"{Guid.NewGuid()}.subs.ext.srt");
+            }
+
+            // Define the SRT-compliant newline (CRLF)
+            const string srtNewLine = "\r\n";
+
+            int count = 0;
+
+            using var writer = new StreamWriter(filePath, false, new UTF8Encoding(true));
+
+            foreach (var sub in fileModel.SubtitleCollection)
+            {
+                ct.ThrowIfCancellationRequested();
+
+                // Skip subs with no rating
+                if (!sub.RatingCurrent.HasValue)
+                    continue;
+
+                // Keep only subs with difficulty HIGHER than user's level
+                if ((int)sub.RatingCurrent.Value >= (int)languageLevel)
+                    continue;
+
+                count++;
+
+                // 1. Index (renumber sequentially)
+                await writer.WriteAsync($"{count}{srtNewLine}");
+
+                // 2. Timecodes
+                string timeFrom = sub.TimeFrom.ToString(@"hh\:mm\:ss\,fff");
+                string timeTo = sub.TimeTo.ToString(@"hh\:mm\:ss\,fff");
+                await writer.WriteAsync($"{timeFrom} --> {timeTo}{srtNewLine}");
+
+                // 3. Text (no DIFF tag in filtered output)
+                string cleanText = sub.Text.Replace(Environment.NewLine, srtNewLine);
+                await writer.WriteAsync($"{cleanText}{srtNewLine}");
+
+                // 4. Blank line
+                await writer.WriteAsync(srtNewLine);
+            }
+
+            await writer.FlushAsync();
+
+            return count;
+        }
     }
 }
