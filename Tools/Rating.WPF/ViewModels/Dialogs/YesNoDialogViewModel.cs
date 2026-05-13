@@ -20,7 +20,7 @@ namespace Rating.WPF.ViewModels.Dialogs
             set { SetProperty(ref _message, value); }
         }
 
-        private string _title = "Notification";
+        private string _title = "Prompt";
         public string Title
         {
             get { return _title; }

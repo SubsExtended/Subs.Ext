@@ -27,7 +27,7 @@
         </TextBlock>
 
         <Button Grid.Row="1" Grid.Column="0"
-                Margin="0,10,0,0"
+                Margin="5"
                 Content="Yes"
                 Width="75" Height="25"
                 HorizontalAlignment="Center"
@@ -37,7 +37,7 @@
         </Button>
 
         <Button Grid.Row="1" Grid.Column="1"
-                Margin="0,10,0,0"
+                Margin="5"
                 Content="No"
                 Width="75" Height="25"
                 HorizontalAlignment="Center"

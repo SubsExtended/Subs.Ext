@@ -6,6 +6,8 @@ using Prism.Services.Dialogs;
 using System;
 using System.IO;
 
+using Rating.WPF.General;
+
 namespace Rating.WPF.ViewModels.Dialogs
 {
     public class RunMediaPlayerDialogViewModel : BindableBase, IDialogAware
@@ -23,7 +25,7 @@ namespace Rating.WPF.ViewModels.Dialogs
             set { SetProperty(ref _message, value); }
         }
 
-        private string _title = "Notification";
+        private string _title = "Play Media File";
         public string Title
         {
             get { return _title; }
@@ -62,20 +64,20 @@ namespace Rating.WPF.ViewModels.Dialogs
         public virtual void OnDialogOpened(IDialogParameters parameters)
         {
             string tempFolder = Path.GetTempPath();
-            _tempFileName = Path.Combine(tempFolder, $"{Guid.NewGuid()}.subs.ext.srt");
+            _tempFileName = Path.Combine(tempFolder, $"{Guid.NewGuid()}." + Constants.TempFilesSrtEnding);
 
             Message = "This will open the VLC Media Player.\r\n" +
                 "Make sure you have VLC installed and configured in the settings.\r\n\r\n" +
                 "Media file:\r\n" +
                 parameters.GetValue<string>("mediaPath") + "\r\n\r\n" +
                 "Subtitle file:\r\n" +
-                _tempFileName + "\r\n" +
-                "It contains \r\n" +
+                _tempFileName + "\r\n\r\n" +
+                "Subtitle file contains " +
                 parameters.GetValue<int>("relevantSubCount") +
                 " entries, filtered by your selected Language Level: " +
                 parameters.GetValue<string>("myLanguageLevel") + "\r\n" +
-                "it is based on the original subtitle file with your changes, but saved as a temporary file.\r\n" +
-                "Your original media file was\r\n" +
+                "It is based on the original subtitle file with your changes, but saved as a temporary file.\r\n\r\n" +
+                "Your original subtitle file was\r\n" +
                 parameters.GetValue<string>("subtitlePath") + "\r\n" +
                 "Your original subtitle file will remain unchanged.\r\n";
         }

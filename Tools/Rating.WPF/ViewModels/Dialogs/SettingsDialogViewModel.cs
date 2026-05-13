@@ -4,6 +4,7 @@ using Microsoft.Win32;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
+using Rating.WPF.Dialogs;
 using Rating.WPF.Services;
 using System;
 
@@ -12,11 +13,13 @@ namespace Rating.WPF.ViewModels.Dialogs
     public class SettingsDialogViewModel : BindableBase, IDialogAware
     {
         private readonly SettingsService _settingsService;
+        private readonly IDialogService _dialogService;
         public event Action<IDialogResult> RequestClose;
 
-        public SettingsDialogViewModel(SettingsService settingsService)
+        public SettingsDialogViewModel(SettingsService settingsService, IDialogService dialogService)
         {
             _settingsService = settingsService;
+            _dialogService = dialogService;
         }
 
         private void BrowseVlc(string parameter)
@@ -77,7 +80,7 @@ namespace Rating.WPF.ViewModels.Dialogs
             set { SetProperty(ref _vlcPath, value); }
         }
 
-        private string _title = "Notification";
+        private string _title = "Settings";
         public string Title
         {
             get { return _title; }
@@ -91,5 +94,13 @@ namespace Rating.WPF.ViewModels.Dialogs
         private DelegateCommand<string> _browseVlcCommand;
         public DelegateCommand<string> BrowseVlcCommand =>
             _browseVlcCommand ?? (_browseVlcCommand = new DelegateCommand<string>(BrowseVlc));
+
+        public DelegateCommand OpenTempFilesCommand =>
+            _openTempFiles ??= new DelegateCommand(() =>
+            {
+                _dialogService.ShowDialog(nameof(TempFilesDialog), null, null);
+            });
+        private DelegateCommand _openTempFiles;
+
     }
 }

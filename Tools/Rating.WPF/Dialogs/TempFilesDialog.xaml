@@ -1,0 +1,34 @@
+﻿<!-- Subs.Ext\Tools\Rating.WPF\Dialogs\TempFilesDialog.xaml -->
+<UserControl x:Class="Rating.WPF.Dialogs.TempFilesDialog"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"
+             prism:ViewModelLocator.AutoWireViewModel="True"
+             Width="500" Height="400">
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <ListView Grid.Row="0"
+                  ItemsSource="{Binding TempFiles}"
+                  SelectionMode="Extended">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="File" Width="280" DisplayMemberBinding="{Binding FileName}" />
+                    <GridViewColumn Header="Created" Width="150" DisplayMemberBinding="{Binding Created}" />
+                    <GridViewColumn Header="Size (KB)" Width="70" DisplayMemberBinding="{Binding SizeKb}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button Content="Open Folder" Width="100" Margin="5" Command="{Binding OpenFolderCommand}" />
+            <Button Content="Delete Selected" Width="120" Margin="5" Command="{Binding DeleteSelectedCommand}" />
+            <Button Content="Delete All" Width="100" Margin="5" Command="{Binding DeleteAllCommand}" />
+            <Button Content="Close" Width="80" Margin="5" Command="{Binding CloseDialogCommand}" CommandParameter="OK"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

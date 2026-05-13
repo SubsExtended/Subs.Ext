@@ -41,6 +41,7 @@ namespace Rating.WPF
             containerRegistry.RegisterDialog<YesNoDialog, YesNoDialogViewModel>(nameof(YesNoDialog));
             containerRegistry.RegisterDialog<SettingsDialog, SettingsDialogViewModel>(nameof(SettingsDialog));
             containerRegistry.RegisterDialog<RunMediaPlayerDialog, RunMediaPlayerDialogViewModel>(nameof(RunMediaPlayerDialog));
+            containerRegistry.RegisterDialog <TempFilesDialog, TempFilesDialogViewModel>(nameof(TempFilesDialog));
         }
 
         protected override void OnInitialized()

@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 using Rating.WPF.Enums;
 using Rating.WPF.Models;
+using Rating.WPF.General;
 
 namespace Rating.WPF.Services
 {
@@ -149,7 +150,7 @@ namespace Rating.WPF.Services
             if (string.IsNullOrWhiteSpace(filePath))
             {
                 string tempFolder = Path.GetTempPath();
-                string tempFile = Path.Combine(tempFolder, $"{Guid.NewGuid()}.subs.ext.srt");
+                string tempFile = Path.Combine(tempFolder, $"{Guid.NewGuid()}.{Constants.TempFilesSrtEnding}");
                 filePath = tempFile;
             }
 
@@ -197,7 +198,7 @@ namespace Rating.WPF.Services
             if (string.IsNullOrWhiteSpace(filePath))
             {
                 string tempFolder = Path.GetTempPath();
-                filePath = Path.Combine(tempFolder, $"{Guid.NewGuid()}.subs.ext.srt");
+                filePath = Path.Combine(tempFolder, $"{Guid.NewGuid()}.{Constants.TempFilesSrtEnding}");
             }
 
             // Define the SRT-compliant newline (CRLF)
