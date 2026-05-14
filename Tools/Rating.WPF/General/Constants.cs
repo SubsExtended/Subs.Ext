@@ -6,6 +6,6 @@ namespace Rating.WPF.General
     {
         public const string ContentRegion = "ContentRegion";
         public const string TempFilesSrtEnding = "subs.ext.srt";
-        public const string AppShortName = "RatedSubs";
+        public const string AppShortName = "RatedSubtitles";
     }
 }
