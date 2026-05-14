@@ -12,11 +12,11 @@ namespace Rating.WPF.ViewModels.Dialogs
 {
     public class SettingsDialogViewModel : BindableBase, IDialogAware
     {
-        private readonly SettingsService _settingsService;
+        private readonly ISettingsService _settingsService;
         private readonly IDialogService _dialogService;
         public event Action<IDialogResult> RequestClose;
 
-        public SettingsDialogViewModel(SettingsService settingsService, IDialogService dialogService)
+        public SettingsDialogViewModel(ISettingsService settingsService, IDialogService dialogService)
         {
             _settingsService = settingsService;
             _dialogService = dialogService;

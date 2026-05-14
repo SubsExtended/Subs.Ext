@@ -12,7 +12,11 @@
 	  <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
 	  <Deterministic>false</Deterministic>
 	  <ContinuousIntegrationBuild>false</ContinuousIntegrationBuild>
+	  <ApplicationIcon>Resources\AppIcon.ico</ApplicationIcon>
   </PropertyGroup>
+  <ItemGroup>
+    <Content Include="Resources\AppIcon.ico" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="LibVLCSharp.WPF" Version="3.9.7.1" />
     <PackageReference Include="Prism.Unity" Version="8.1.97" />

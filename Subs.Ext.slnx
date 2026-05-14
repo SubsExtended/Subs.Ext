@@ -11,4 +11,5 @@
   <Folder Name="/Tools/">
     <Project Path="Tools/Rating.WPF/Rating.WPF.csproj" Id="4db86609-a790-4698-bfd7-8870a83f216b" />
   </Folder>
+  <Project Path="Rating.WPF.Setup/Rating.WPF.Setup.vdproj" Type="Installer" />
 </Solution>
