@@ -83,13 +83,13 @@ namespace Rating.WPF.ViewModels
             // --- PREPARE DIALOG PARAMETERS -----------------------------------------
 
             var parameters = new DialogParameters
-    {
-        { "fileRank", fileRank },
-        { "mediaPath", MediaFilename },
-        { "subtitlePath", fileModel.FilePath },
-        { "myLanguageLevel", LanguageLevelSelectedItem.ToString() },
-        { "relevantSubCount", relevantSubCount }
-    };
+            {
+                { "fileRank", fileRank },
+                { "mediaPath", MediaFilename },
+                { "subtitlePath", fileModel.FilePath },
+                { "myLanguageLevel", LanguageLevelSelectedItem.ToString() },
+                { "relevantSubCount", relevantSubCount }
+            };
 
             // --- SHOW DIALOG --------------------------------------------------------
 

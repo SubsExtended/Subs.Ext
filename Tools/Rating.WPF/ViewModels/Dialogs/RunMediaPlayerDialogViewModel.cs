@@ -67,17 +67,17 @@ namespace Rating.WPF.ViewModels.Dialogs
             _tempFileName = Path.Combine(tempFolder, $"{Guid.NewGuid()}." + Constants.TempFilesSrtEnding);
 
             Message = "This will open the VLC Media Player.\r\n" +
-                "Make sure you have VLC installed and configured in the settings.\r\n\r\n" +
+                $"Make sure you have VLC installed and configured in {Constants.AppShortName} Settings.\r\n\r\n" +
                 "Media file:\r\n" +
                 parameters.GetValue<string>("mediaPath") + "\r\n\r\n" +
-                "Subtitle file:\r\n" +
+                "Subtitle file (will be created if you hit 'OK'):\r\n" +
                 _tempFileName + "\r\n\r\n" +
-                "Subtitle file contains " +
+                "Subtitle file will contain " +
                 parameters.GetValue<int>("relevantSubCount") +
                 " entries, filtered by your selected Language Level: " +
                 parameters.GetValue<string>("myLanguageLevel") + "\r\n" +
                 "It is based on the original subtitle file with your changes, but saved as a temporary file.\r\n\r\n" +
-                "Your original subtitle file was\r\n" +
+                "Your original subtitle file is:\r\n" +
                 parameters.GetValue<string>("subtitlePath") + "\r\n" +
                 "Your original subtitle file will remain unchanged.\r\n";
         }
