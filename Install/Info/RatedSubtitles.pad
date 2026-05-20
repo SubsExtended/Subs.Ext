@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XML_DIZ_INFO>
+  <MASTER_PAD_VERSION_INFO>
+    <MASTER_PAD_VERSION>4.0</MASTER_PAD_VERSION>
+    <MASTER_PAD_EDITOR>Vasilkoff PAD Make 1.0</MASTER_PAD_EDITOR>
+    <MASTER_PAD_EDITOR_URL>https://vasilkoff.com/pad-make</MASTER_PAD_EDITOR_URL>
+    <MASTER_PAD_INFO>Portable Application Description (PAD) is a structured XML format that describes software applications for easy submission to directories.</MASTER_PAD_INFO>
+    <CERTIFIED>N</CERTIFIED>
+    <CERTIFICATE_ID></CERTIFICATE_ID>
+    <CERTIFICATE_LICENSE></CERTIFICATE_LICENSE>
+  </MASTER_PAD_VERSION_INFO>
+
+  <Company_Info>
+    <Company_Name>Subs.Ext</Company_Name>
+    <Company_WebSite_URL>https://subs.ext.com</Company_WebSite_URL>
+    <Contact_Info>
+      <Contact_Email>subs.ext@outlook.com</Contact_Email>
+    </Contact_Info>
+  </Company_Info>
+
+  <Program_Info>
+    <Program_Name>Rated Subtitles</Program_Name>
+    <Program_Version>0.1.a</Program_Version>
+    <Program_Release_Month>05</Program_Release_Month>
+    <Program_Release_Day>20</Program_Release_Day>
+    <Program_Release_Year>2026</Program_Release_Year>
+    <Program_Type>Freeware</Program_Type>
+    <Program_Category_Class>Education::Languages</Program_Category_Class>
+    <Program_OS_Support>Windows 8</Program_OS_Support>
+  </Program_Info>
+
+  <Web_Info>
+    <Application_URLs>
+      <Application_Info_URL>https://subs.ext.com</Application_Info_URL>
+      <Application_Screenshot_URL>https://github.com/SubsExtended/Subs.Ext/blob/master/Install/Info/Screenshot.png</Application_Screenshot_URL>
+      <Application_Icon_URL>https://github.com/SubsExtended/Subs.Ext/blob/master/Tools/Rating.WPF/Resources/AppIcon.png</Application_Icon_URL>
+    </Application_URLs>
+    <Download_URLs>
+      <Primary_Download_URL>https://github.com/SubsExtended/Subs.Ext/blob/master/Install/Rating.WPF.0.1.a.Setup.msi</Primary_Download_URL>
+    </Download_URLs>
+  </Web_Info>
+
+  <Program_Descriptions>
+    <English>
+      <Char_Desc_450>RatingWPF application is a part of solution that will selectively display subtitles for audio/video media, depending on how user rates his skill with the language of media</Char_Desc_450>
+    </English>
+  </Program_Descriptions>
+</XML_DIZ_INFO>
