@@ -6,7 +6,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
-             Width="400" Height="300"
+             Width="600" Height="400"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid x:Name="LayoutRoot">
@@ -24,12 +24,13 @@
 
         <TextBlock Grid.Row="0" Grid.Column="0"
                    Margin="20,5"
-                   VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                   VerticalAlignment="Stretch" HorizontalAlignment="Right"
                    TextWrapping="Wrap"
                    Text="Author:">
         </TextBlock>
 
         <TextBlock Grid.Row="1" Grid.Column="0"
+                   HorizontalAlignment="Right"
                    Margin="20,0">
                    <Hyperlink NavigateUri="mailto:someone@example.com"
                               RequestNavigate="HyperlinkEmail_RequestNavigate">
@@ -39,18 +40,29 @@
 
         <TextBlock Grid.Row="2" Grid.Column="0"
                    Margin="20,5"
-                   VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                   VerticalAlignment="Stretch" HorizontalAlignment="Right"
                    TextWrapping="Wrap"
                    Text="GitHub Repo:">
         </TextBlock>
 
         <TextBlock Grid.Row="3" Grid.Column="0"
+                   HorizontalAlignment="Right"
                    Margin="20,0">
                    <Hyperlink NavigateUri="https://github.com/SubsExtended/Subs.Ext"
                               RequestNavigate="HyperlinkGitHub_RequestNavigate">
                        https://github.com/SubsExtended/Subs.Ext
                    </Hyperlink>
         </TextBlock>
+
+        <ScrollViewer Grid.Row="4" Grid.Column="0"
+                      Margin="20,40">
+            <TextBlock Margin="0,0,5,0"
+                       VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                       TextWrapping="Wrap"
+                       ScrollViewer.VerticalScrollBarVisibility="Auto"
+                       Text="{Binding Message}">
+            </TextBlock>
+        </ScrollViewer>
 
         <Button Grid.Row="5" Grid.Column="0"
                 Margin="5"

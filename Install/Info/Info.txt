@@ -1,0 +1,20 @@
+Try this new freeware tool for language learners:
+RatedSubtitles application (Windows, ver. 0.1.a) is a part of solution that will selectively display subtitles for audio/video media, depending on
+a) how user rates his skill with the language of media.
+b) how each phrase difficulty is rated in subtitles file. prases' difficulty can be rated
+depending on words frequency in the language, or how clearly the phrase is pronounced in the media.
+
+Application screenshot:
+https://github.com/SubsExtended/Subs.Ext/blob/master/Install/Info/Screenshot.png
+
+Application installer:
+https://github.com/SubsExtended/Subs.Ext/blob/master/Install/Rating.WPF.0.1.a.Setup.msi
+
+Currently, the application works with SRT files only. Also, VLC media player must be installed yor pc.
+Run the application
+Click "Open primary file" and select a primary SRT file
+Optionally, click "Open secondary file" and add secondary SRT files
+After opening a primary SRT file - a list of all subtitles will appear in the left pane. Use "Promote" or "Demote" buttons to rate a subtitle line, rating A-hardest, E(or null)-easiest
+Click "Open media file" to open the relevant audio/video file
+Select your language level from the dropdown
+Click "Play" button (black triangle button). It will open the media player with VLC and display only filtered subtitles
