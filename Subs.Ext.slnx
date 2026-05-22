@@ -9,7 +9,9 @@
     <File Path="language_level.lua" />
   </Folder>
   <Folder Name="/Tools/">
-    <Project Path="Tools/Rating.WPF.Setup/Rating.WPF.Setup.vdproj" Type="Installer" />
+    <Project Path="Tools/Rating.WPF.Setup/Rating.WPF.Setup.vdproj" Type="Installer">
+      <Build />
+    </Project>
     <Project Path="Tools/Rating.WPF/Rating.WPF.csproj" Id="4db86609-a790-4698-bfd7-8870a83f216b" />
   </Folder>
 </Solution>
