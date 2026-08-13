@@ -1,0 +1,109 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rating.WPF Project Overview</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            color: #333;
+        }
+
+        /* Header layout using Flexbox */
+        header {
+            display: flex;
+            vertical-align: top; /* Vertically centers the text with the image */
+            gap: 20px; /* Spacing between the image and the text */
+            margin-bottom: 30px; /* Spacing below the header */
+        }
+
+            /* Strict sizing for the image */
+            header img {
+                width: 128px;
+                height: 128px;
+                object-fit: cover; /* Prevents distortion if the image ratio changes */
+            }
+
+            /* Large text formatting */
+            header h1 {
+                font-size: 2.5rem;
+                margin: 0;
+            }
+
+        /* Main body content styling */
+        main {
+            max-width: 800px; /* Keeps the plain text readable on wide screens */
+        }
+
+        /* Styling for lists to look clean */
+        ul, ol {
+            margin-bottom: 15px;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        .wip-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+            .wip-list li::before {
+                content: "🛠️ ";
+            }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="Rating.WPF.0.1.a.Setup.msi">
+            <img src="logo.png" alt="Header Image">
+        </a>
+        <h1>
+            Rated Subtitles 0.1.a<br>
+            Smart Subtitles for Language Learners
+        </h1>
+    </header>
+
+    <main>
+        <p><strong>Rated Subtitles</strong> is an application that selectively displays subtitles for audio/video media based on two factors:</p>
+        <ol type="a">
+            <li>The user's self-rated proficiency in the media's language.</li>
+            <li>The difficulty rating of each phrase in the subtitle file. A phrase's difficulty can be determined by word frequency in the language or by how clearly it is pronounced in the media.</li>
+        </ol>
+
+        <p>The goal of this solution is to allow users to watch and listen to media primarily in its original language. However, if certain phrases are rated too difficult to understand or hear, the media player will automatically display subtitles for those specific lines.</p>
+
+        <p>Another part of this solution will include extensions for various media players, both desktop and web-based. The intended workflow for these extensions is as follows:</p>
+        <ol>
+            <li>The user opens a media file in their media player.</li>
+            <li>A new menu option is added to the media player: <strong>"Select your language level"</strong> (Options: A, B, C, D, E).</li>
+            <li>
+                The user opens a corresponding, modified subtitle file created by this application. These modifications include adding a difficulty rating (A/B/C/D/E) to each subtitle line.
+                <ul>
+                    <li>If the user's selected language level is <strong>lower</strong> than the line's rating, the media player <strong>will display</strong> the subtitle line.</li>
+                    <li>If the user's selected language level is <strong>equal to or higher</strong> than the line's rating, the media player <strong>will hide</strong> the subtitle line.</li>
+                </ul>
+            </li>
+        </ol>
+
+        <p><em>(Note: For now, the application only supports opening <code>*.SRT</code> files and generating modified copies of them.)</em></p>
+
+        <p>If there is enough interest in this project, I plan to add support for more media and subtitle formats, as well as create add-ins for popular media players. Additionally, the system could connect to AI services to automatically rate phrases in subtitle files, and a web service could be developed for users to share these modified files.</p>
+
+        <h3>Work in Progress (WIP):</h3>
+        <ul class="wip-list">
+            <li>VLC extension</li>
+            <li>Windows Media Player extension</li>
+            <li>Chrome extension</li>
+            <li>Edge extension</li>
+        </ul>
+    </main>
+
+</body>
+</html>
