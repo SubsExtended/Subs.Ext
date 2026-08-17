@@ -2605,6 +2605,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
         "Release"
         {
@@ -2621,6 +2629,22 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
+            }
         }
     }
     "Deployable"
@@ -2638,6 +2662,16 @@
         {
             "LaunchCondition"
             {
+                "{A06ECF26-33A3-4562-8140-9B0E340D4F24}:_9F337A5F9CFD4063B7A00B969EA0E9A9"
+                {
+                "Name" = "8:.NET Core"
+                "Message" = "8:[VSDNETCOREMSG]"
+                "AllowLaterVersions" = "11:FALSE"
+                "InstallUrl" = "8:https://dotnet.microsoft.com/download/dotnet-core/[NetCoreVerMajorDotMinor]"
+                "IsNETCore" = "11:TRUE"
+                "Architecture" = "2:0"
+                "Runtime" = "2:0"
+                }
             }
         }
         "File"
@@ -11778,7 +11812,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:RatedSubtitles"
         "ProductCode" = "8:{72F8B43F-8FC7-4ACE-B213-0408A5DD439A}"
-        "PackageCode" = "8:{1E45A4BF-B16B-4048-BB34-A6EB28CEEAB1}"
+        "PackageCode" = "8:{AB8918DF-0AD7-422E-B57C-867075CD0F80}"
         "UpgradeCode" = "8:{E89E0DC6-585A-431B-907A-3773248882AF}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -11900,7 +11934,7 @@
         {
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_BD33E4C6363948678382BC203996BD17"
             {
-            "Name" = "8:Rated Subtitles 0.1.a"
+            "Name" = "8:Rated Subtitles"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
