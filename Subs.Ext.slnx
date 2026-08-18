@@ -16,7 +16,8 @@
   </Folder>
   <Folder Name="/Web/" />
   <Folder Name="/Web/Plain/">
-    <File Path="Web/Plain/home.html" />
-    <File Path="Web/Plain/logo.png" />
+    <File Path="Web/Plain/AppIcon256.png" />
+    <File Path="Web/Plain/index.html" />
+    <File Path="Web/Plain/_headers" />
   </Folder>
 </Solution>

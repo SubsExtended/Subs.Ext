@@ -2612,6 +2612,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
             }
         }
         "Release"
@@ -2619,7 +2627,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:Release\\Rating.WPF.Setup.msi"
+        "OutputFilename" = "8:Release\\RatedSubtitles.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -11810,20 +11818,20 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:RatedSubtitles"
-        "ProductCode" = "8:{72F8B43F-8FC7-4ACE-B213-0408A5DD439A}"
-        "PackageCode" = "8:{AB8918DF-0AD7-422E-B57C-867075CD0F80}"
+        "ProductName" = "8:Rated Subtitles"
+        "ProductCode" = "8:{39A12D19-C1D7-47B2-9B20-1CE6A43B632A}"
+        "PackageCode" = "8:{54F57A92-6E9E-4611-B4C2-1A1C9337F1AB}"
         "UpgradeCode" = "8:{E89E0DC6-585A-431B-907A-3773248882AF}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:0.1.0"
+        "ProductVersion" = "8:1.0.0"
         "Manufacturer" = "8:Subs.Ext"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
-        "Title" = "8:RatedSubtitlesSetup"
+        "Title" = "8:Rated Subtitles Setup"
         "Subject" = "8:"
         "ARPCONTACT" = "8:Subs.Ext"
         "Keywords" = "8:"
