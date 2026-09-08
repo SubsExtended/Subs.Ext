@@ -20,4 +20,5 @@
     <File Path="Web/Plain/index.html" />
     <File Path="Web/Plain/_headers" />
   </Folder>
+  <Folder Name="/Web/Screenshots/" />
 </Solution>
